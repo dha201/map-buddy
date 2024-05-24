@@ -53,7 +53,7 @@ export default function Home() {
           key={`${date}-{idx}`}
           name={date.name} 
           imageURL={date.imageURL}
-          href={`/dates/${date.name}`}
+          href={`/dates/${idx}`}
         />
       ))};
 
