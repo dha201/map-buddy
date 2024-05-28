@@ -22,7 +22,12 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Date Buddy",
   description: "Help you find the perfect date",
+  icons: {
+    icon: "/static/favicon.jpg",
+  },
 };
+
+
 
 export default function RootLayout({
   children,

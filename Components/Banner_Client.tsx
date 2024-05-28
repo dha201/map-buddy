@@ -1,40 +1,100 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 
 export default function Banner_Client() {
+    const [mood, setMood] = useState('');
+    const [budget, setBudget] = useState('');
+    const [location, setLocation] = useState('');
 
-    const handleOnClick = () => {
-        console.log('Find Dates');
+    const handleOnClick = async () => {
+        if (mood && budget && location) {
+            try {
+                const response = await fetch('/api/getDateIdeas', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ mood, budget, location }),
+                });
+                const data = await response.json();
+                const dateIdeas = JSON.stringify(data);
+                const url = `/dates/${encodeURIComponent(mood)}-${encodeURIComponent(budget)}?dateIdeas=${encodeURIComponent(dateIdeas)}`;
+                window.location.href = url;
+            } catch (error) {
+                console.error('Error fetching date ideas:', error);
+            }
+        } else {
+            alert('Please select mood, budget, and location');
+        }
     };
 
     return (
         <div className="relative mb-12 lg:mb-24 lg:grid lg:grid-cols-2 lg:gap-12">
-          <div className="z-20 flex flex-col px-2 md:pt-12">
+            <div className="z-20 flex flex-col px-2 md:pt-12">
+                <h1 className="my-2 flex-wrap">
+                    <span className="pr-2 text-white">Date</span>
+                    <span className="text-gray-900">Buddy</span>
+                </h1>
 
-            <h1 className="my-2 flex-wrap">
-              <span className="pr-2 text-white">Date</span>
-              <span className="text-gray-900">Buddy</span>
-            </h1>
+                <p className="font-sans text-xl font-semibold text-gray-900 md:mt-5 lg:text-2xl">
+                    Help you find the perfect Date!
+                </p>
 
-            <p className="font-sans text-xl font-semibold text-gray-900 md:mt-5 lg:text-2xl">
-                Help you find the perfect Date!
-            </p>
-    
-            <div className="mt-12">
-              <button onClick={handleOnClick}>Find Dates</button>
+                <div className="mt-6">
+                    <label className="block text-white mb-2">Select your mood:</label>
+                    <select
+                        value={mood}
+                        onChange={(e) => setMood(e.target.value)}
+                        className="w-full p-2 rounded"
+                    >
+                        <option value="">--Choose a mood--</option>
+                        <option value="adventurous">Adventurous</option>
+                        <option value="relaxed">Relaxed</option>
+                        <option value="romantic">Romantic</option>
+                    </select>
+                </div>
+
+                <div className="mt-6">
+                    <label className="block text-white mb-2">Select your budget:</label>
+                    <select
+                        value={budget}
+                        onChange={(e) => setBudget(e.target.value)}
+                        className="w-full p-2 rounded"
+                    >
+                        <option value="">--Choose a budget--</option>
+                        <option value="$">$ (0 - $50)</option>
+                        <option value="$$">$$ ($50 - $200)</option>
+                        <option value="$$$">$$$ (above $200)</option>
+                    </select>
+                </div>
+
+                <div className="mt-6">
+                    <label className="block text-white mb-2">Enter your location:</label>
+                    <input
+                        type="text"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        className="w-full p-2 rounded"
+                        placeholder="Enter your city or state"
+                    />
+                </div>
+
+                <div className="mt-12">
+                    <button onClick={handleOnClick} className="bg-blue-500 text-white p-3 rounded">
+                        Find Dates
+                    </button>
+                </div>
             </div>
-
-          </div>
-          <div className="relative z-10 lg:absolute lg:right-0 lg:top-10 lg:w-[50%]">
-              <Image
-                src="/static/hero-image.png"
-                width={800}
-                height={300}
-                alt="hero image"
-                priority={true}
-                className="relative"
-              />
+            <div className="relative z-10 lg:absolute lg:right-0 lg:top-10 lg:w-[50%]">
+                <Image
+                    src="/static/hero-image.png"
+                    width={800}
+                    height={300}
+                    alt="hero image"
+                    priority={true}
+                    className="relative"
+                />
             </div>
         </div>
     );
