@@ -7,10 +7,9 @@ type CardType = {
   name: string;
   description: string;
   defaultImageURL: string;
-  imageURL: string;
 };
 
-export default function Card({ name, description, defaultImageURL, imageURL }: CardType) {
+export default function Card({ name, description, defaultImageURL }: CardType) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleOnClick = (e) => {
@@ -27,7 +26,7 @@ export default function Card({ name, description, defaultImageURL, imageURL }: C
     >
       <Image
         className="rounded-lg shadow-lg transition-all duration-300 ease-in-out"
-        src={isExpanded ? imageURL : defaultImageURL}
+        src={defaultImageURL}
         layout="fill"
         objectFit="cover"
         alt={name}

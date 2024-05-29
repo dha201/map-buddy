@@ -1,15 +1,14 @@
 import Image from "next/image";
 import Banner_Client from "@/Components/Banner_Client";
 import Card from "@/Components/Card_server";
-import { fetchDateSuggestion } from "@/lib/date-suggestion";
 
-async function getData() {
+/* async function getData() {
   return await fetchDateSuggestion();
-}
+} */
 
 export default async function Home() {
-  const datesID = await getData();
-  console.log(datesID);
+  // const datesID = await getData();
+  // console.log(datesID);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-14">

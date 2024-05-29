@@ -10,7 +10,8 @@ export default function Banner_Client() {
     const handleOnClick = async () => {
         if (mood && budget && location) {
             try {
-                const response = await fetch('/api/getDateIdeas', {
+                console.log('Sending data:', { mood, budget, location }); // Log data before sending
+                const response = await fetch('/api/suggest-date-ideas', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -18,8 +19,9 @@ export default function Banner_Client() {
                     body: JSON.stringify({ mood, budget, location }),
                 });
                 const data = await response.json();
-                const dateIdeas = JSON.stringify(data);
-                const url = `/dates/${encodeURIComponent(mood)}-${encodeURIComponent(budget)}?dateIdeas=${encodeURIComponent(dateIdeas)}`;
+                console.log('Received data:', data); // Log the received response
+                const dateIdea = JSON.stringify(data);
+                const url = `/dates/${encodeURIComponent(mood)}-${encodeURIComponent(budget)}?dateIdea=${encodeURIComponent(dateIdea)}`;
                 window.location.href = url;
             } catch (error) {
                 console.error('Error fetching date ideas:', error);
