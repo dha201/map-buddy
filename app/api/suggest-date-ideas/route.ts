@@ -24,32 +24,48 @@ export async function POST(req: Request) {
                 User: Suggest a detailed date idea for a [mood] with a [budget] in [location]. Please respond in the following JSON format:
                 
                 {
-                  name: 'Hiking and Picnic at Shenandoah National Park'
-                  description: 
-                  'Location: Shenandoah National Park, Virginia
-                  Budget: $30 or less
-                  
-                  Activities:
-                  Hiking:
-                  
-                  Shenandoah National Park offers a variety of hiking trails that range from easy to challenging. A popular and scenic option is the Stony Man Trail, which is a relatively short and easy hike with stunning views.
-                  If you’re both more adventurous, consider the Old Rag Mountain hike for a more challenging and rewarding experience.
-                  Picnic:
-                  
-                  Pack a homemade picnic with sandwiches, fruits, snacks, and drinks. Don’t forget a blanket to sit on!
-                  Find a scenic spot along the trail or use one of the park’s picnic areas to enjoy your meal with a view.
-                  Wildlife Watching:
-                  
-                  Bring binoculars and a camera to capture the beautiful wildlife and scenery. Shenandoah is home to a variety of animals, including deer, black bears, and numerous bird species.
-                  Cost Breakdown:
-                  Gas/Transportation: Depending on your starting location, this will vary. For instance, if you’re driving from Richmond, VA, expect to spend around $10-$15 on gas.
-                  Park Entrance Fee: $30 per vehicle for a seven-day pass. However, if you have an annual National Park pass, entry is free.
-                  Picnic Supplies: If you already have items at home, you might only spend $10-$15 on additional snacks and drinks.
-                  Tips:
-                  Check the weather forecast before you go to ensure a pleasant experience.
-                  Wear comfortable hiking shoes and bring plenty of water.
-                  Arrive early to avoid crowds, especially on weekends.
-                  This date idea combines physical activity, beautiful natural scenery, and quality time together without breaking the bank. Enjoy your adventure!'
+                  "name": "Hiking and Picnic at Shenandoah National Park",
+                  "location": "Shenandoah National Park, Virginia",
+                  "budget": "$30 or less",
+                  "activities": [
+                    {
+                      "activity": "Hiking",
+                      "description": "Shenandoah National Park offers a variety of hiking trails that range from easy to challenging. A popular and scenic option is the Stony Man Trail, which is a relatively short and easy hike with stunning views. If you’re both more adventurous, consider the Old Rag Mountain hike for a more challenging and rewarding experience."
+                    },
+                    {
+                      "activity": "Picnic",
+                      "description": "Pack a homemade picnic with sandwiches, fruits, snacks, and drinks. Don’t forget a blanket to sit on! Find a scenic spot along the trail or use one of the park’s picnic areas to enjoy your meal with a view."
+                    },
+                    {
+                      "activity": "Wildlife Watching",
+                      "description": "Bring binoculars and a camera to capture the beautiful wildlife and scenery. Shenandoah is home to a variety of animals, including deer, black bears, and numerous bird species."
+                    }
+                  ],
+                  "cost_breakdown": [
+                    {
+                      "item": "Gas/Transportation",
+                      "description": "Depending on your starting location, this will vary. For instance, if you’re driving from Richmond, VA, expect to spend around $10-$15 on gas."
+                    },
+                    {
+                      "item": "Park Entrance Fee",
+                      "description": "$30 per vehicle for a seven-day pass. However, if you have an annual National Park pass, entry is free."
+                    },
+                    {
+                      "item": "Picnic Supplies",
+                      "description": "If you already have items at home, you might only spend $10-$15 on additional snacks and drinks."
+                    }
+                  ],
+                  "tips": [
+                    {
+                      "tip": "Check the weather forecast before you go to ensure a pleasant experience."
+                    },
+                    {
+                      "tip": "Wear comfortable hiking shoes and bring plenty of water."
+                    },
+                    {
+                      "tip": "Arrive early to avoid crowds, especially on weekends."
+                    }
+                  ]
                 }
             `},
             {
@@ -58,36 +74,75 @@ export async function POST(req: Request) {
 
                 {
                   "name": "Name of the date idea",
-                  "description": "Detailed description of the date idea"
+                  "location": "Location of the date",
+                  "budget": "Estimated budget for the date",
+                  "activities": [
+                    {
+                      "activity": "Activity 1",
+                      "description": "Description of Activity 1"
+                    },
+                    {
+                      "activity": "Activity 2",
+                      "description": "Description of Activity 2"
+                    },
+                    {
+                      "activity": "Activity 3",
+                      "description": "Description of Activity 3"
+                    }
+                  ],
+                  "cost_breakdown": [
+                    {
+                      "item": "Cost Breakdown Item 1",
+                      "description": "Description of Cost Breakdown Item 1"
+                    },
+                    {
+                      "item": "Cost Breakdown Item 2",
+                      "description": "Description of Cost Breakdown Item 2"
+                    },
+                    {
+                      "item": "Cost Breakdown Item 3",
+                      "description": "Description of Cost Breakdown Item 3"
+                    }
+                  ],
+                  "tips": [
+                    {
+                      "tip": "Tip 1"
+                    },
+                    {
+                      "tip": "Tip 2"
+                    },
+                    {
+                      "tip": "Tip 3"
+                    }
+                  ]
                 }`,
             },
         ];
 
-        const response = await openai.chat.completions.create({
-            model: 'gpt-3.5-turbo',
-            messages: messages,
-            temperature: 0.7,
-        });
+      const response = await openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: messages,
+        temperature: 0.7,
+      });
 
-        let rawContent = response.choices[0].message.content;
-        console.log('Raw response content:', rawContent); // Log the raw response content
+      let rawContent = response.choices[0].message.content;
 
-        // Clean up the rawContent to ensure proper JSON formatting
-        rawContent = rawContent.replace(/\\n/g, ' ').replace(/\n/g, ' ').replace(/\\'/g, "'");
+      // Clean up the rawContent to ensure proper JSON formatting
+      rawContent = rawContent.replace(/\\n/g, ' ').replace(/\n/g, ' ').replace(/\\'/g, "'");
 
-        // Extract JSON from the cleaned content using regex
-        const jsonString = rawContent.match(/{[\s\S]*}/);
-        if (!jsonString) {
-            throw new Error('Failed to extract JSON from response');
-        }
+      // Extract JSON from the cleaned content using regex
+      const jsonString = rawContent.match(/{[\s\S]*}/);
+      if (!jsonString) {
+          throw new Error('Failed to extract JSON from response');
+      }
 
-        // Parse the extracted JSON string
-        const dateIdea = JSON.parse(jsonString[0]);
-        console.log('Generated date idea:', dateIdea); // Log the generated date idea
-        return NextResponse.json(dateIdea);
+      // Parse the extracted JSON string
+      const dateIdea = JSON.parse(jsonString[0]);
+      console.log('Generated date idea:', dateIdea); // Log the generated date idea
+      return NextResponse.json(dateIdea);
 
-    } catch (error) {
-        console.error('Error fetching date ideas:', error);
-        return NextResponse.json({ error: 'Failed to fetch date ideas' }, { status: 500 });
-    }
+  } catch (error) {
+      console.error('Error fetching date ideas:', error);
+      return NextResponse.json({ error: 'Failed to fetch date ideas' }, { status: 500 });
+  }
 }
