@@ -1,23 +1,33 @@
-import Card from '@/Components/Card_server';
+'use client';
 
-export default function Page({ searchParams }) {
-    const { dateIdea } = searchParams;
-    const parsedDateIdea = dateIdea ? JSON.parse(decodeURIComponent(dateIdea)) : null;
+import Card from '@/Components/Card_server';
+import { useEffect, useState } from 'react';
+
+export default function Page() {
+    const [dateIdea, setDateIdea] = useState(null);
+
+    useEffect(() => {
+        const storedDateIdea = localStorage.getItem('dateIdea');
+        if (storedDateIdea) {
+            setDateIdea(JSON.parse(storedDateIdea));
+            console.log('Stored date idea:', storedDateIdea);
+        }
+    }, []);
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-between p-14">
             <h2 className="mt-8 pb-8 text-4xl font-bold text-white">
                 Your Date Idea
             </h2>
-            {parsedDateIdea ? (
+            {dateIdea ? (
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-2 lg:grid-cols-3 lg:gap-6">
                     <Card
-                        name={parsedDateIdea.name}
-                        location={parsedDateIdea.location}
-                        budget={parsedDateIdea.budget}
-                        activities={parsedDateIdea.activities}
-                        cost_breakdown={parsedDateIdea.cost_breakdown}
-                        tips={parsedDateIdea.tips}
+                        name={dateIdea.name}
+                        location={dateIdea.location}
+                        budget={dateIdea.budget}
+                        activities={dateIdea.activities}
+                        cost_breakdown={dateIdea.cost_breakdown}
+                        tips={dateIdea.tips}
                         defaultImageURL="/static/mystery-card.png"
                     />
                 </div>

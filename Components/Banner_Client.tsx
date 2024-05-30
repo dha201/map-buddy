@@ -18,11 +18,15 @@ export default function Banner_Client() {
                     },
                     body: JSON.stringify({ mood, budget, location }),
                 });
+                
                 const data = await response.json();
                 console.log('Received data:', data); // Log the received response
+    
                 const dateIdea = JSON.stringify(data);
-                const url = `/dates/${encodeURIComponent(mood)}-${encodeURIComponent(budget)}?dateIdea=${encodeURIComponent(dateIdea)}`;
+                localStorage.setItem('dateIdea', dateIdea); // Store the JSON object in local storage
+                const url = `/dates/${encodeURIComponent(mood)}-${encodeURIComponent(location)}`;
                 window.location.href = url;
+            
             } catch (error) {
                 console.error('Error fetching date ideas:', error);
             }
@@ -30,6 +34,7 @@ export default function Banner_Client() {
             alert('Please select mood, budget, and location');
         }
     };
+    
 
     return (
         <div className="relative mb-12 lg:mb-24 lg:grid lg:grid-cols-2 lg:gap-12">
@@ -42,6 +47,18 @@ export default function Banner_Client() {
                 <p className="font-sans text-xl font-semibold text-gray-900 md:mt-5 lg:text-2xl">
                     Help you find the perfect Date!
                 </p>
+
+                
+                <div className="mt-6">
+                    <label className="block text-white mb-2">Enter your location:</label>
+                    <input
+                        type="text"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        className="w-full p-2 rounded"
+                        placeholder="Enter your city or state"
+                    />
+                </div>
 
                 <div className="mt-6">
                     <label className="block text-white mb-2">Select your mood:</label>
@@ -69,17 +86,6 @@ export default function Banner_Client() {
                         <option value="$$">$$ ($50 - $200)</option>
                         <option value="$$$">$$$ (above $200)</option>
                     </select>
-                </div>
-
-                <div className="mt-6">
-                    <label className="block text-white mb-2">Enter your location:</label>
-                    <input
-                        type="text"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        className="w-full p-2 rounded"
-                        placeholder="Enter your city or state"
-                    />
                 </div>
 
                 <div className="mt-12">
