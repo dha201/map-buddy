@@ -11,7 +11,7 @@ export default function Banner_Client() {
         if (mood && budget && location) {
             try {
                 console.log('Sending data:', { mood, budget, location }); // Log data before sending
-
+    
                 // Fetch date ideas in a list of JSON Objects from the OPENAI API
                 const response = await fetch('/api/suggest-date-ideas', {
                     method: 'POST',
@@ -20,43 +20,41 @@ export default function Banner_Client() {
                     },
                     body: JSON.stringify({ mood, budget, location }),
                 });
-                
+    
                 const data = await response.json();
                 console.log('Received data:', data); // Log the received response
-
-                // Extract the date location from the date generated response
-                const { 'date location': dateLocation } = data;
-                console.log('Date location being used:', dateLocation); 
-
-                // Fetch the photoUrl from the GOogle Places API using the place name
-                const placeResponse = await fetch('/api/get-place-images', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-
-                    },
-                    body: JSON.stringify({ placeName: dateLocation }),
-                }); 
-
-                const placeData = await placeResponse.json(); 
-                console.log('Received place data:', placeData); // Log the received place data
-
-                let dateIdeaWithPhotos;
-                if (placeData.photos && placeData.photos.length > 0) {
-                    dateIdeaWithPhotos = { ...data, photos: placeData.photos };
-                } else {
-                    dateIdeaWithPhotos = data;
-                }
-                
-                // Store the JSON object in local storage 
-                localStorage.setItem('dateIdea', JSON.stringify(dateIdeaWithPhotos));
-                
-                // Debugging: Log the object being stored
-                console.log('Stored date idea with photos:', dateIdeaWithPhotos);
-
+    
+                const dateIdeasWithPhotos = await Promise.all(data.map(async (dateIdea) => {
+                    const { 'date location': dateLocation } = dateIdea;
+                    console.log('Date location being used:', dateLocation);
+    
+                    // Fetch the photoUrl from the Google Places API using the place name
+                    const placeResponse = await fetch('/api/get-place-images', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ placeName: dateLocation }),
+                    });
+    
+                    const placeData = await placeResponse.json();
+                    console.log('Received place data:', placeData); // Log the received place data
+    
+                    if (placeData.photos && placeData.photos.length > 0) {
+                        return { ...dateIdea, photos: placeData.photos };
+                    } else {
+                        return dateIdea;
+                    }
+                }));
+    
+                // Store the JSON array of date ideas with photos in local storage
+                localStorage.setItem('dateIdeas', JSON.stringify(dateIdeasWithPhotos));
+                console.log('Stored date ideas with photos:', dateIdeasWithPhotos); // Debugging: Log the object being stored
+    
+                // Navigate to the dates page with mood and location in the URL
                 const url = `/dates/${encodeURIComponent(mood)}-${encodeURIComponent(location)}`;
                 window.location.href = url;
-            
+    
             } catch (error) {
                 console.error('Error fetching date ideas:', error);
             }
