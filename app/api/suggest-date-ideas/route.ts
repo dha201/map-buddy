@@ -46,13 +46,13 @@ export async function POST(req: Request) {
             // console.log(html);
 
             // 2. Sreen shot the website -> OPENAI VISION API -> JSON
-            const dataDir = path.join(process.cwd(), 'app', 'data');
+            /* const dataDir = path.join(process.cwd(), 'app', 'data');
             if(!fs.existsSync(dataDir)) {
               fs.mkdirSync(dataDir, {recursive: true});
             }
 
-            const screenshotPath = path.join(dataDir, 'screenshot.jpg');
-            await page.screenshot({ path: screenshotPath, fullPage: true});
+            const screenshotPath = path.join(dataDir, 'screenshot.jpg'); */
+            await page.screenshot({ path: 'screenshot.jpg', fullPage: true});
 
             // Uncomment and complete the OpenAI API call if needed
             /* const response = await openai.chat.completions.create({
