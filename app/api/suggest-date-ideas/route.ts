@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
+import path from 'path';
+import fs from 'fs';
+
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY || '',
 });
 
-export const runtime = 'edge';
 
 export async function POST(req: Request) {
     try {
@@ -16,35 +18,63 @@ export async function POST(req: Request) {
         // Array to store previously generated date ideas
         const previousDateIdeas: any[] = [];
 
-        // Function to fetch real-time data using puppeteer
-        const fetchRealTimeData = async () => {
-            const browser = await puppeteer.launch();
-            const page = await browser.newPage();
-            await page.goto('https://www.theknot.com/content/date-ideas');
-
-            const data = await page.evaluate(() => {
-                const results: { title: string; description: string }[] = [];
-                const items = document.querySelectorAll('h3');
-                items.forEach(item => {
-                    const title = item.innerText;
-                    const nextElement = item.nextElementSibling as HTMLElement;
-                    const description = nextElement?.tagName === 'P' ? nextElement.innerText : '';
-                    if (description) {
-                        results.push({ title, description });
-                    }
-                });
-                return results;
+        // Main function to scrape the website
+        const scrap = async (): Promise<void> => {
+          try {
+            const openai = new OpenAI({
+                apiKey: process.env.OPENAI_API_KEY || '',
             });
 
-            console.log('Scraped data:', data); 
+            /* const fetchRealTimeData = async (browserWSEndpoint: string): Promise<any> => {
+              return await puppeteer.connect({
+                  browserWSEndpoint,
+              });
+            };
 
+            const browser = await fetchRealTimeData(`wss://${process.env.BRIGHT_DATA_AUTH}@brd.superproxy.io:9222`); */
+            const browser = await puppeteer.connect({
+              browserWSEndpoint: `wss://${process.env.BRIGHT_DATA_AUTH}@brd.superproxy.io:9222`,
+            });
+            const page = await browser.newPage();
+            await page.setViewport({ width: 1920, height: 1080 });
+
+            await page.goto('https://www.goodhousekeeping.com/life/relationships/a31405192/cute-romantic-date-ideas/', { waitUntil: 'networkidle0',  timeout: 0 });
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+
+            // 1. Extract the HTML content of the website
+            //const html = await page.evaluate(() => document.body.innerHTML);
+            // console.log(html);
+
+            // 2. Sreen shot the website -> OPENAI VISION API -> JSON
+            const dataDir = path.join(process.cwd(), 'app', 'data');
+            if(!fs.existsSync(dataDir)) {
+              fs.mkdirSync(dataDir, {recursive: true});
+            }
+
+            const screenshotPath = path.join(dataDir, 'screenshot.jpg');
+            await page.screenshot({ path: screenshotPath, fullPage: true});
+
+            // Uncomment and complete the OpenAI API call if needed
+            /* const response = await openai.chat.completions.create({
+                messages: [
+                    {
+                        role: 'user',
+                        content: `Here is the HTML of some data idea website: ${html}.
+                                Give me the date idea and its description of each date idea in JSON format.`
+                    }
+                ]
+            }); */
+            
             await browser.close();
-            return data;
+          } catch (error) {
+              console.error('ERROR DURING SCRAPING:', error);
+          }
         };
 
+
         // Function to generate varied date ideas
-        const generateDateIdea = async (realTimeData: any[], mood: string, budget: string, location: string) => {
-            const realTimeDataFormatted = realTimeData.map(item => `
+        const generateDateIdea = async (suggestDateIdea: any[], mood: string, budget: string, location: string) => {
+            const suggestDateIdeaFormatted = suggestDateIdea.map(item => `
             - ${item.title}: ${item.description}`).join('\n');
 
             const messages: OpenAI.ChatCompletionMessageParam[] = [
@@ -64,8 +94,56 @@ export async function POST(req: Request) {
                     ALWAYS DOUBLE CHECK if you provide an accurate and detailed location for the date and MAKE SURE to provide the key place in 'date location' for example response with date location: 'Potomac River, Washington, D.C.' and NOT date location: 'Washington, D.C.'.
                     ALWAYS MAKE SURE to double check with your previous responses to ensure no duplication in the suggestions.
 
-                    Here are some real-time date ideas from a popular website:
-                    ${realTimeDataFormatted}
+                    If you run out of ideas, use the following real-time date ideas from a popular website:
+                    ${suggestDateIdeaFormatted}
+                    
+                    An Example Interaction:
+                    User: Suggest a detailed date idea for a [mood] with a [budget] in [location]. Please respond in the following JSON format:
+                    
+                    {
+                      "name": "Hiking and Picnic at Shenandoah National Park",
+                      "date location": "Shenandoah National Park, Virginia",
+                      "budget": "$30 or less",
+                      "activities": [
+                        {
+                          "activity": "Hiking",
+                          "description": "Shenandoah National Park offers a variety of hiking trails that range from easy to challenging. A popular and scenic option is the Stony Man Trail, which is a relatively short and easy hike with stunning views. If you’re both more adventurous, consider the Old Rag Mountain hike for a more challenging and rewarding experience."
+                        },
+                        {
+                          "activity": "Picnic",
+                          "description": "Pack a homemade picnic with sandwiches, fruits, snacks, and drinks. Don’t forget a blanket to sit on! Find a scenic spot along the trail or use one of the park’s picnic areas to enjoy your meal with a view."
+                        },
+                        {
+                          "activity": "Wildlife Watching",
+                          "description": "Bring binoculars and a camera to capture the beautiful wildlife and scenery. Shenandoah is home to a variety of animals, including deer, black bears, and numerous bird species."
+                        }
+                      ],
+                      "cost_breakdown": [
+                        {
+                          "item": "Gas/Transportation",
+                          "description": "Depending on your starting location, this will vary. For instance, if you’re driving from Richmond, VA, expect to spend around $10-$15 on gas."
+                        },
+                        {
+                          "item": "Park Entrance Fee",
+                          "description": "$30 per vehicle for a seven-day pass. However, if you have an annual National Park pass, entry is free."
+                        },
+                        {
+                          "item": "Picnic Supplies",
+                          "description": "If you already have items at home, you might only spend $10-$15 on additional snacks and drinks."
+                        }
+                      ],
+                      "tips": [
+                        {
+                          "tip": "Check the weather forecast before you go to ensure a pleasant experience."
+                        },
+                        {
+                          "tip": "Wear comfortable hiking shoes and bring plenty of water."
+                        },
+                        {
+                          "tip": "Arrive early to avoid crowds, especially on weekends."
+                        }
+                      ]
+                    }
                 `},
                 {
                     role: 'user',
@@ -119,40 +197,43 @@ export async function POST(req: Request) {
             ];
 
             const response = await openai.chat.completions.create({
-                model: 'gpt-4o',
+                model: 'gpt-3.5-turbo-0125',
                 messages: messages,
-                temperature: 0.2,
+                temperature: 0.8,
             });
 
             let rawContent = response.choices[0].message.content;
 
-            rawContent = rawContent.replace(/\\n/g, ' ').replace(/\n/g, ' ').replace(/\\'/g, "'");
+            if (rawContent !== null) {
+              rawContent = rawContent.replace(/\\n/g, ' ').replace(/\n/g, ' ').replace(/\\'/g, "'");
 
-            const jsonString = rawContent.match(/{[\s\S]*}/);
-            if (!jsonString) {
-                throw new Error('Failed to extract JSON from response');
+              const jsonString = rawContent.match(/{[\s\S]*}/);
+              if (!jsonString) {
+                  throw new Error('Failed to extract JSON from response');
+              }
+
+              const dateIdea = JSON.parse(jsonString[0]);
+              console.log('Generated date idea:', dateIdea);
+              return dateIdea;
             }
 
-            const dateIdea = JSON.parse(jsonString[0]);
-            console.log('Generated date idea:', dateIdea);
-            return dateIdea;
         };
-
-        // Fetch real-time data
-        const realTimeData = await fetchRealTimeData();
 
         // Generate 3 varied date ideas
         const dateIdeas = [];
         while (dateIdeas.length < 3) {
-            const idea = await generateDateIdea(realTimeData, mood, budget, location);
+            // Fetch real-time data
+            const suggestDateIdea = await scrap();
+            
+            /* const idea = await generateDateIdea(suggestDateIdea, mood, budget, location);
             const isDuplicate = previousDateIdeas.some(prevIdea => prevIdea.name === idea.name && prevIdea['date location'] === idea['date location']);
             if (!isDuplicate) {
                 dateIdeas.push(idea);
                 previousDateIdeas.push(idea);
-            }
+            } */
         }
 
-        return NextResponse.json(dateIdeas);
+        // return NextResponse.json(dateIdeas);
 
     } catch (error) {
         console.error('Error fetching date ideas:', error);
