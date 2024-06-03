@@ -14,7 +14,26 @@ const nextConfig = {
     },
     env: {
         OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-        GOOGLE_API_KEY: process.env.GOOGLE_API_KEY
+        GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
+    },
+    webpack: (config, { isServer }) => {
+        if (!isServer) {
+            config.resolve.fallback = {
+                ...config.resolve.fallback,
+                fs: false,
+                child_process: false,
+                net: false,
+                tls: false,
+            };
+        }
+
+        config.module.rules.push({
+            test: /\.ts$/,
+            use: 'ts-loader',
+            exclude: /node_modules/,
+        });
+
+        return config;
     },
 };
 
