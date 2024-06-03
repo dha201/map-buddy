@@ -38,7 +38,7 @@ export async function POST(req: Request) {
             const page = await browser.newPage();
             await page.setViewport({ width: 1920, height: 1080 });
 
-            await page.goto('https://www.goodhousekeeping.com/life/relationships/a31405192/cute-romantic-date-ideas/', { waitUntil: 'networkidle0',  timeout: 0 });
+            await page.goto('https://www.goodhousekeeping.com/life/relationships/a31405192/cute-romantic-date-ideas/', { waitUntil: 'networkidle0', timeout: 5 });
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             // 1. Extract the HTML content of the website
@@ -46,16 +46,16 @@ export async function POST(req: Request) {
             // console.log(html);
 
             // 2. Sreen shot the website -> OPENAI VISION API -> JSON
-            /* const dataDir = path.join(process.cwd(), 'app', 'data');
+            const dataDir = path.join(process.cwd(), 'app', 'data');
             if(!fs.existsSync(dataDir)) {
               fs.mkdirSync(dataDir, {recursive: true});
             }
 
-            const screenshotPath = path.join(dataDir, 'screenshot.jpg'); */
-            await page.screenshot({ path: 'screenshot.jpg', fullPage: true});
+            const screenshotPath = path.join(dataDir, 'screenshot.jpg');
+            await page.screenshot({ path: screenshotPath, fullPage: true});
 
             // Uncomment and complete the OpenAI API call if needed
-            /* const response = await openai.chat.completions.create({
+            const response = await openai.chat.completions.create({
                 messages: [
                     {
                         role: 'user',
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
                                 Give me the date idea and its description of each date idea in JSON format.`
                     }
                 ]
-            }); */
+            });
             
             await browser.close();
           } catch (error) {
