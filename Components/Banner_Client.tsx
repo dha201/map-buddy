@@ -12,6 +12,8 @@ export default function Banner_Client() {
   const [mood, setMood] = useState('');
   const [budget, setBudget] = useState('');
   const [location, setLocation] = useState('');
+  const [specialNote, setNote] = useState('');
+
 
   const handleOnClick = async () => {
     if (mood && budget && location) {
@@ -19,38 +21,61 @@ export default function Banner_Client() {
         console.log('Sending data:', { mood, budget, location }); // Log data before sending
 
         // Fetch date ideas in a list of JSON Objects from the OPENAI API
-        const response = await fetch('/api/suggest-date-ideas', {
+        const generateIdeas = await fetch('/api/suggest-date-ideas', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ mood, budget, location }),
+          body: JSON.stringify({ mood, budget, location, specialNote }),
         });
 
-        const data: DateIdea[] = await response.json();
+        const data: DateIdea[] = await generateIdeas.json();
         console.log('Received data:', data); // Log the received response
 
         const dateIdeasWithPhotos = await Promise.all(data.map(async (dateIdea: DateIdea) => {
           const { 'date location': dateLocation } = dateIdea;
           console.log('Date location being used:', dateLocation);
 
-          // Fetch the photoUrl from the Google Places API using the place name
-          const placeResponse = await fetch('/api/get-place-images', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ placeName: dateLocation }),
-          });
+          const locationName = dateLocation.split(',')[0].trim();
+          let photos = [];
 
-          const placeData = await placeResponse.json();
-          console.log('Received place data:', placeData); // Log the received place data
+          if (locationName === 'At Home' || locationName === 'Your Backyard' || locationName === 'Your Home' ) {
+            // Fetch image from DeepAI API
+            const generateImage = await fetch('/api/generate-image', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ prompt: dateIdea }), 
+            });
 
-          if (placeData.photos && placeData.photos.length > 0) {
-            return { ...dateIdea, photos: placeData.photos };
-          } else {
-            return dateIdea;
+            const imageData = await generateImage.json();
+            console.log('Received image data:', imageData); // Log the received image data
+
+            if (imageData.output_url) {
+              photos.push(imageData.output_url);
+            }
+          } 
+          
+          else {
+            // Fetch the photoUrl from the Google Places API using the place name
+            const findPlace = await fetch('/api/get-place-images', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ placeName: dateLocation }),
+            });
+
+            const placeData = await findPlace.json();
+            console.log('Received place data:', placeData); // Log the received place data
+
+            if (placeData.photos && placeData.photos.length > 0) {
+              photos = placeData.photos;
+            }
           }
+
+          return { ...dateIdea, photos };
         }));
 
         // Store the JSON array of date ideas with photos in local storage
@@ -59,7 +84,7 @@ export default function Banner_Client() {
 
         // Navigate to the dates page with mood and location in the URL
         const url = `/dates/${encodeURIComponent(mood)}-${encodeURIComponent(location)}`;
-        // window.location.href = url;
+        window.location.href = url;
 
       } catch (error) {
         console.error('Error fetching date ideas:', error);
@@ -101,6 +126,8 @@ export default function Banner_Client() {
           >
             <option value="">--Choose a mood--</option>
             <option value="adventurous">Adventurous</option>
+            <option value="At-Home">At-Home</option>
+            <option value="Creative">Creative</option>
             <option value="relaxed">Relaxed</option>
             <option value="romantic">Romantic</option>
           </select>
@@ -118,6 +145,17 @@ export default function Banner_Client() {
             <option value="$$">$$ ($50 - $200)</option>
             <option value="$$$">$$$ (above $200)</option>
           </select>
+        </div>
+
+        <div className="mt-6">
+          <label className="block text-white mb-2">Enter any restriction or special note:</label>
+          <input
+            type="text"
+            value={specialNote}
+            onChange={(e) => setNote(e.target.value)}
+            className="w-full p-2 rounded"
+            placeholder="i.e No gluten, No seafood, physical restrictions, etc."
+          />
         </div>
 
         <div className="mt-12">

@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import puppeteer from 'puppeteer';
-import path from 'path';
-import fs from 'fs';
 
 
 const openai = new OpenAI({
@@ -12,214 +9,14 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
     try {
-        const { mood, budget, location } = await req.json();
-        console.log('Received data:', { mood, budget, location });
+        const { mood, budget, location, specialNote } = await req.json();
+        console.log('Received data:', { mood, budget, location, specialNote });
 
         // Array to store previously generated date ideas
         const previousDateIdeas: any[] = [];
 
-        // Main function to scrape the website
-        const scrap = async (): Promise<void> => {
-          try {
-            const openai = new OpenAI({
-                apiKey: process.env.OPENAI_API_KEY || '',
-            });
-
-            // Connect to Bright Data remote browser
-            /* const browser = await puppeteer.connect({
-              browserWSEndpoint: `wss://${process.env.BRIGHT_DATA_AUTH}@brd.superproxy.io:9222`,
-            }); */
-
-            const browser = await puppeteer.launch({
-              headless: true, // Run in headless mode
-              args: ['--no-sandbox', '--disable-setuid-sandbox'] // Required for some environments
-            });
-            const page = await browser.newPage();
-            await page.setViewport({ width: 1920, height: 1080 });
-
-            await page.goto('https://www.goodhousekeeping.com/life/relationships/a31405192/cute-romantic-date-ideas/', { waitUntil: 'networkidle0', timeout: 60000 });
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-
-            // 1. Extract the HTML content of the website
-            //const html = await page.evaluate(() => document.body.innerHTML);
-            // console.log(html);
-
-            // 2. Sreen shot the website -> OPENAI VISION API -> JSON
-            const dataDir = path.join(process.cwd(), 'app', 'data');
-            if(!fs.existsSync(dataDir)) {
-              fs.mkdirSync(dataDir, {recursive: true});
-            }
-
-            const screenshotPath = path.join(dataDir, 'screenshot.jpg');
-            const imgBase64 = await page.screenshot({ 
-              path: screenshotPath, 
-              fullPage: true, 
-              encoding: 'base64'
-            });
-
-            const fetchDateIdeas = async () => {
-              const maxRetries = 3;
-              let attempt = 0;
-              let success = false;
-              let response;
-          
-              while (attempt < maxRetries && !success) {
-                  try {
-                      response = await openai.chat.completions.create({
-                          model: 'gpt-4o',
-                          messages: [
-                              {
-                                  role: 'user',
-                                  content: [
-                                      {
-                                          type: 'text',
-                                          text: `Organize type of dates and ONLY give me the date idea and its description of each date idea in JSON format and nothing else.
-                                            Example Template: {
-                                              "Indoor Date Ideas": [
-                                                {
-                                                  "date_idea": "Cooking Class",
-                                                  "description": "this is perfect for bonding and will give you both something to laugh about." 
-                                                },
-                                                {
-                                                  "date_idea": "Wine and Paint Night",
-                                                  "description": "You have a few of these events that are popular and very fun for dates."      
-                                                },
-                                                {
-                                                  "date_idea": "Bookstore Challenge",
-                                                  "description": "By agreeing to visit a bookstore and choosing a book for each other."
-                                                },
-                                                {
-                                                  "date_idea": "Spa Night",
-                                                  "description": "Create a calming atmosphere with candles and soft music and assemble a DIY pampering kit."
-                                                },
-                                                {
-                                                  "date_idea": "Movie Night",
-                                                  "description": "Make it a movie marathon with a theme, or strategically pick one movie and enjoy after hours."
-                                                }
-                                              ],
-                                              "Fun Date Ideas": [
-                                                {
-                                                  "date_idea": "Mini Golf",
-                                                  "description": "While potentially fun and silly, mini golf is an ideal, low-stress outing."   
-                                                },
-                                                {
-                                                  "date_idea": "Trivia Night",
-                                                  "description": "Compete as a couple against other players in a bar’s weekly trivia contest."  
-                                                },
-                                                {
-                                                  "date_idea": "Bike Ride",
-                                                  "description": "Plan a route and explore a new part of town on a bike."
-                                                },
-                                                {
-                                                  "date_idea": "Karaoke",
-                                                  "description": "Singing in front of an audience is guaranteed to be a fun time, whether you can carry a tune or not."
-                                                }
-                                              ],
-                                              "Cheap Date Ideas": [
-                                                {
-                                                  "date_idea": "Game Night",
-                                                  "description": "Host a night with board games or card games meant for two."
-                                                },
-                                                {
-                                                  "date_idea": "Hiking",
-                                                  "description": "Spend some time outdoors together on a picturesque hike."
-                                                },
-                                                {
-                                                  "date_idea": "Picnic",
-                                                  "description": "Grab a blanket, pack some food, and take your date for a day at the park."    
-                                                },
-                                                {
-                                                  "date_idea": "Volunteer Together",
-                                                  "description": "Spending time together while contributing to your community can be extremely rewarding."
-                                                },
-                                                {
-                                                  "date_idea": "Visit A Museum",
-                                                  "description": "Many museums have free days—check your local listings."
-                                                }
-                                              ],
-                                              "At Home Date Ideas": [
-                                                {
-                                                  "date_idea": "DIY Pizza Night",
-                                                  "description": "You could even shop for ingredients together, then make and enjoy the pizza." 
-                                                },
-                                                {
-                                                  "date_idea": "Movie Marathon",
-                                                  "description": "Pick a series or a genre of movies and have a marathon screening."
-                                                },
-                                                {
-                                                  "date_idea": "Crafting Time",
-                                                  "description": "Choose a simple DIY to do together and make an evening of it."
-                                                },
-                                                {
-                                                  "date_idea": "Dance Party",
-                                                  "description": "Clear some space, make a playlist and dance like no one’s watching."
-                                                },
-                                                {
-                                                  "date_idea": "Plan a Vacation",
-                                                  "description": "Planning your next vacation can be just as fun as going on the vacation itself."
-                                                }
-                                              ]
-                                            }`
-                                            
-                                            
-                                      },
-                                      {
-                                          type: 'image_url',
-                                          image_url: {
-                                              url: "data:image/jpeg;base64," + imgBase64
-                                          }
-                                      },
-                                  ]
-                              }
-                          ]
-                      });
-          
-                      success = true; // If the request is successful, exit the loop
-                  } catch (error) {
-                      attempt++;
-                      console.error(`Attempt ${attempt} failed:`, error);
-          
-                      if (attempt >= maxRetries) {
-                          console.error('Max retries reached. Unable to fetch date ideas.');
-                          throw error; // Rethrow the error after max retries
-                      }
-          
-                      // Wait for a short delay before retrying
-                      await new Promise(resolve => setTimeout(resolve, 1000));
-                  }
-              }
-          
-              return response;
-          };
-          
-          const response = await fetchDateIdeas();
-
-          if (response) {
-              const messageContent = response.choices[0].message?.content;
-              if (messageContent) {
-                  const keywords = messageContent.trim();
-                  console.log('Keywords:', keywords);
-                  return response; // Return the response from fetchDateIdeas
-              } else {
-                  console.error('No content in the response message.');
-              }
-          } else {
-              console.error('No response received.');
-          }
-
-          await browser.close();
-          return response!;
-
-          } catch (error) {
-              console.error('ERROR DURING SCRAPING:', error);
-          }
-        };
-
-
         // Function to generate varied date ideas
-        const generateDateIdea = async (suggestDateIdea: any[], mood: string, budget: string, location: string) => {
-            const suggestDateIdeaFormatted = suggestDateIdea.map(item => `
-            - ${item.title}: ${item.description}`).join('\n');
+        const generateDateIdea = async (mood: string, budget: string, location: string, specialNote: string) => {
 
             const messages: OpenAI.ChatCompletionMessageParam[] = [
                 {
@@ -235,63 +32,73 @@ export async function POST(req: Request) {
                     Mood classifications are as follows: Adventurous: Activities that involve excitement, exploration, and a bit of thrill. 
                     Romantic: Activities that foster intimacy, connection, and a romantic atmosphere.
                     Relaxed: Activities that are laid-back, stress-free, and help in unwinding. 
-                    ALWAYS DOUBLE CHECK if you provide an accurate and detailed location for the date and MAKE SURE to provide the key place in 'date location' for example response with date location: 'Potomac River, Washington, D.C.' and NOT date location: 'Washington, D.C.'.
+                    If the date is at home, AlWAYS include 'At Home, [city]' and DO NOT response with 'Home', 'home', 'Your Home' . Otherwise, ALWAYS DOUBLE CHECK if you provide an accurate and detailed location for the date and MAKE SURE to provide the key place in 'date location' for example response with date location: 'Potomac River, Washington, D.C.' and NOT date location: 'Washington, D.C.'.
                     ALWAYS MAKE SURE to double check with your previous responses to ensure no duplication in the suggestions.
+                    
+                    Instructions:
+                    Provide a detailed date idea suggestion based on the mood, budget, and location. Use the list of date ideas below for inspiration but you do not have to:
+                    (Note: this list is not exhaustive and you can come up with your own creative ideas!)
 
-                    If you run out of ideas, use the following real-time date ideas from a popular website:
-                    ${suggestDateIdeaFormatted}
-                    
-                    An Example Interaction:
-                    User: Suggest a detailed date idea for a [mood] with a [budget] in [location]. Please respond in the following JSON format:
-                    
-                    {
-                      "name": "Hiking and Picnic at Shenandoah National Park",
-                      "date location": "Shenandoah National Park, Virginia",
-                      "budget": "$30 or less",
-                      "activities": [
-                        {
-                          "activity": "Hiking",
-                          "description": "Shenandoah National Park offers a variety of hiking trails that range from easy to challenging. A popular and scenic option is the Stony Man Trail, which is a relatively short and easy hike with stunning views. If you’re both more adventurous, consider the Old Rag Mountain hike for a more challenging and rewarding experience."
-                        },
-                        {
-                          "activity": "Picnic",
-                          "description": "Pack a homemade picnic with sandwiches, fruits, snacks, and drinks. Don’t forget a blanket to sit on! Find a scenic spot along the trail or use one of the park’s picnic areas to enjoy your meal with a view."
-                        },
-                        {
-                          "activity": "Wildlife Watching",
-                          "description": "Bring binoculars and a camera to capture the beautiful wildlife and scenery. Shenandoah is home to a variety of animals, including deer, black bears, and numerous bird species."
-                        }
-                      ],
-                      "cost_breakdown": [
-                        {
-                          "item": "Gas/Transportation",
-                          "description": "Depending on your starting location, this will vary. For instance, if you’re driving from Richmond, VA, expect to spend around $10-$15 on gas."
-                        },
-                        {
-                          "item": "Park Entrance Fee",
-                          "description": "$30 per vehicle for a seven-day pass. However, if you have an annual National Park pass, entry is free."
-                        },
-                        {
-                          "item": "Picnic Supplies",
-                          "description": "If you already have items at home, you might only spend $10-$15 on additional snacks and drinks."
-                        }
-                      ],
-                      "tips": [
-                        {
-                          "tip": "Check the weather forecast before you go to ensure a pleasant experience."
-                        },
-                        {
-                          "tip": "Wear comfortable hiking shoes and bring plenty of water."
-                        },
-                        {
-                          "tip": "Arrive early to avoid crowds, especially on weekends."
-                        }
-                      ]
-                    }
+                    Adventurous/Fun Date Ideas
+                      Go Bowling - Have a fun time at the bowling alley.
+                      Visit a Museum - Explore a local museum and learn something new.
+                      Go to a Comedy Show - Enjoy a night of laughter at a comedy club.
+                      Take a Dance Class - Learn some new dance moves together.
+                      Go Mini Golfing - Have a playful competition at mini-golf.
+                      Go to a Concert - Enjoy live music from your favorite band or artist.
+                      Go to a Fair or Carnival - Have fun with rides, games, and fair food.
+                      Attend a Sporting Event - Cheer for your favorite team at a live game.
+                      Go to a Local Festival - Experience local culture and festivities.
+                      Visit an Aquarium - Explore the underwater world at an aquarium.
+                     
+                    Cheap Date Ideas
+                      Go for a Hike - Spend time outdoors on a scenic hike.
+                      Have a Picnic - Pack a lunch and enjoy a meal outside.
+                      Visit a Farmers Market - Explore a local farmers market and try fresh produce.
+                      Go to the Beach - Relax and have fun at the beach.
+                      Take a Bike Ride - Enjoy a bike ride through your neighborhood or park.
+                      Stargaze - Spend the night looking at the stars.
+                      Visit a Park - Take a walk or have a picnic in a local park.
+                      Go to a Free Event - Look for free events in your area.
+                      Volunteer Together - Spend time helping others and volunteering.
+                      Go to a Library - Explore books and resources at a local library.
+                      
+                    Creative Date Ideas
+                      Take a Pottery Class - Create something unique with a pottery class.
+                      Paint Together - Have a fun time painting or doing an art project.
+                      Write a Story Together - Collaborate on writing a short story.
+                      Make a Playlist - Curate a playlist of your favorite songs.
+                      Do a Photo Shoot - Have fun taking pictures together.
+                      Attend a Workshop - Learn a new skill at a workshop or class.
+                      Build Something - Work on a DIY project together.
+                      Create a Time Capsule - Make a time capsule to open in the future.
+                      Have a Themed Night - Plan a night around a specific theme.
+                      Do a Science Experiment - Have fun with a simple science experiment at home.
+                      
+                    At-Home Date Ideas
+                      Have a Backyard Campout - Set up a tent and camp out in the backyard.
+                      Make Homemade Pizza - Spend the night making and baking pizzas.
+                      Do a Home Improvement Project - Work on improving something in your home.
+                      Create a DIY Craft - Make something creative together.
+                      Make a Vision Board - Create vision boards for your goals and dreams.
+                      Have a Karaoke Night - Sing your favorite songs with a karaoke session.
+                      Do a Workout Together - Exercise together with a workout video.
+                      Have a Game Night - Play video games or board games together.
+                      Try a Virtual Experience - Explore a virtual museum or take a virtual tour.
+                      Cook Together - Spend the night making a meal from scratch.
+                      Plan a Wine Tasting Night - Have a cozy evening with your favorite wines.
+                      Have a Spa Night - Set up a spa night with massages and relaxation.
+                      Play a Board Game - Have fun with classic board games or try a new one.
+                      Create a Scrapbook - Put together a scrapbook of your favorite memories.
+                      Host a Movie Marathon - Watch a series of your favorite movies.
+                      Do a Puzzle Together - Work together on a challenging puzzle.
+                      Try a New Recipe - Experiment with cooking a new dish.
+                      Read Together - Enjoy reading a book or articles together.
+                      Write Each Other Letters - Write love letters to each other and read them aloud.
                 `},
                 {
                     role: 'user',
-                    content: `Suggest a detailed date idea for a ${mood} mood with a ${budget} budget in ${location}. Please respond in the following JSON format:
+                    content: `Suggest a detailed date idea for a ${mood} mood with a ${budget} budget in ${location} and make sure to focus on ${specialNote}. Respond in the following JSON format:
 
                     {
                       "name": "Name of the date idea",
@@ -343,7 +150,7 @@ export async function POST(req: Request) {
             const response = await openai.chat.completions.create({
                 model: 'gpt-4o',
                 messages: messages,
-                temperature: 0.8,
+                temperature: 0.5,
             });
 
             let rawContent = response.choices[0].message.content;
@@ -364,20 +171,69 @@ export async function POST(req: Request) {
         };
 
         // Generate 3 varied date ideas
-        const dateIdeas = [];
-        while (dateIdeas.length < 3) {
-            // Fetch real-time data
-            const suggestDateIdea = await scrap();
-            
-            const idea = await generateDateIdea(suggestDateIdea, mood, budget, location);
-            const isDuplicate = previousDateIdeas.some(prevIdea => prevIdea.name === idea.name && prevIdea['date location'] === idea['date location']);
-            if (!isDuplicate) {
-                dateIdeas.push(idea);
-                previousDateIdeas.push(idea);
+        const isSimilarDateIdea = async (name1: string, name2: string): Promise<boolean> => {
+          const messages: OpenAI.ChatCompletionMessageParam[] = [
+            {
+              role: 'user',
+              content: `Are the following date ideas similar? \n1. ${name1} \n2. ${name2} \nAnswer with "true" or "false".`,
+            },
+          ];
+        
+          const response = await openai.chat.completions.create({
+            model: 'gpt-4o', // Use the appropriate model
+            messages: messages,
+            max_tokens: 5,
+            n: 1,
+            stop: null,
+            temperature: 0.5,
+          });
+        
+          const messageContent = response.choices[0].message.content;
+        
+          if (messageContent === null) {
+            throw new Error('Received null content from OpenAI API');
+          }
+        
+          const answer = messageContent.trim().toLowerCase();
+          return answer === 'true';
+        };
+        
+      
+      const dateIdeas = [];
+      while (dateIdeas.length < 3) {
+        const idea = await generateDateIdea(mood, budget, location, specialNote);
+      
+        // Extract the first part of the date location before the comma
+        const locationName = idea['date location'].split(',')[0].trim();
+      
+        // Check for duplicates based on the first part of 'date location' and 'name'
+        const isDuplicate = previousDateIdeas.some(prevIdea => {
+          const prevLocationName = prevIdea['date location'].split(',')[0].trim();
+          return prevLocationName === locationName && prevIdea['name'] === idea['name'];
+        });
+      
+        let isSimilar = false;
+        if (idea['date location'] === 'At Home') {
+          for (const prevIdea of previousDateIdeas) {
+            if (prevIdea['date location'] === 'At Home') {
+              isSimilar = await isSimilarDateIdea(prevIdea['name'], idea['name']);
+              if (isSimilar) break;
             }
+          }
         }
+      
+        if (idea['date location'] !== 'At Home' && !isDuplicate) {
+          dateIdeas.push(idea);
+          previousDateIdeas.push(idea);
+        } else if (idea['date location'] === 'At Home' && !isSimilar) {
+          dateIdeas.push(idea);
+          previousDateIdeas.push(idea);
+        }
+      }
+      
+        
 
-        // return NextResponse.json(dateIdeas);
+        return NextResponse.json(dateIdeas);
 
     } catch (error) {
         console.error('Error fetching date ideas:', error);
