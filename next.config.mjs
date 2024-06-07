@@ -14,6 +14,10 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: 'api.deepai.org',
             },
+            {
+                protocol: 'https',
+                hostname: 'serpapi.com',
+            }
         ],
     },
     env: {

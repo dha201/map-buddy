@@ -103,8 +103,7 @@ export async function POST(req: Request) {
             If the date is at home, AlWAYS include 'At Home, [city]' and DO NOT response with 'Home', 'home', 'Your Home' . Otherwise, ALWAYS DOUBLE CHECK if you provide an accurate and detailed location for the date and MAKE SURE to provide the key place in 'date location' for example response with date location: 'Potomac River, Washington, D.C.' and NOT date location: 'Washington, D.C.'.
             ALWAYS MAKE SURE to double check with your previous responses to ensure no duplication in the suggestions.
 
-            IMPORATNT:
-              If the Idea is within the list below. 
+            If the Idea is within the list below. 
               "At-Home": [
                 "Have a Backyard Campout - Set up a tent and camp out in the backyard.",
                 "Make Homemade Pizza - Spend the night making and baking pizzas.",
@@ -124,10 +123,12 @@ export async function POST(req: Request) {
                 "Do a Puzzle Together - Work together on a challenging puzzle.",
                 "Try a New Recipe - Experiment with cooking a new dish.",
                 "Read Together - Enjoy reading a book or articles together.",
-                "Write Each Other Letters - Write love letters to each other and read them aloud."
+                "Write Each Other Letters - Write love letters to each other and read them aloud.",
+                "Have a Backyard Campout - Set up a tent and camp out in the backyard.",
               ]
-              Then AlWAYS include 'At Home' in the 'date location' field and DO NOT response with 'Home', 'home', 'Your Home', 'Your Backyard', 'Your House', 'Your Your Cozy Living Room', etc.. and do not suggest any other date location.
-            `
+              NEVER NEVER NEVER include anything related to 'Living room' or 'Backyard' or 'Kitchen' in the 'date location' field. ONLY include 'At Home' in the 'date location' along with the city name.
+              And ALWAYS include at home in the 'name' field along with the date idea name. For example, "name": "At Home, Have a Backyard Campout".
+              `
         ];
 
         const generateDateIdea = async (randomIdea: string, budget: string, location: string, specialNote: string) => {
@@ -206,9 +207,12 @@ export async function POST(req: Request) {
                         "Do a Puzzle Together - Work together on a challenging puzzle.",
                         "Try a New Recipe - Experiment with cooking a new dish.",
                         "Read Together - Enjoy reading a book or articles together.",
-                        "Write Each Other Letters - Write love letters to each other and read them aloud."
+                        "Write Each Other Letters - Write love letters to each other and read them aloud.",
+                        "Have a Backyard Campout - Set up a tent and camp out in the backyard.",
                       ]
-                      Then AlWAYS include 'At Home' in the 'date location' field and DO NOT response with 'Home', 'home', 'Your Home', 'Your Backyard', 'Your House', 'Your Your Cozy Living Room', etc.. and do not suggest any other date location.
+                      NEVER NEVER NEVER include anything related to 'Living room' or 'Backyard' or 'Kitchen' in the 'date location' field. ONLY include 'At Home' in the 'date location' along with the city name.
+                      And ALWAYS include at home in the 'name' field along with the date idea name. For example, "name": "At Home, Have a Backyard Campout".
+
                       `
                 },
             ];
@@ -250,7 +254,7 @@ export async function POST(req: Request) {
             max_tokens: 5,
             n: 1,
             stop: null,
-            temperature: 0.5,
+            temperature: 1,
           });
         
           const messageContent = response.choices[0].message.content;

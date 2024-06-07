@@ -1,8 +1,6 @@
 'use client';
 import React, { useState } from 'react';
 import Image from 'next/image';
-import puppeteer from 'puppeteer';
-
 
 interface DateIdea {
   name: string;
@@ -19,150 +17,14 @@ export default function Banner_Client() {
   const [location, setLocation] = useState('');
   const [specialNote, setNote] = useState('');
 
-
-const data: DateIdea[] = [
-  {
-    name: 'Karaoke Night In',
-    'date location': 'At Home, Virginia',
-    budget: '$',
-    activities: [
-      {
-        activity: 'Set Up a Karaoke Station',
-        description: 'Create a fun and lively atmosphere by setting up a karaoke station in your living room or backyard. Use a karaoke machine or apps on your phone or computer to access a wide range of songs.'
-      },
-      {
-        activity: 'Sing Your Favorite Songs',
-        description: 'Take turns singing your favorite songs and encourage each other to perform. Have a mix of solo performances and duets to make the night even more entertaining.'
-      },
-      {
-        activity: 'Vote for the Best Performance',
-        description: "After each performance, have a mini judging session where you vote for the best performance based on enthusiasm, creativity, and stage presence. Give out fun awards like 'Best Vocal Performance' or 'Most Entertaining'."
-      }
-    ],
-    cost_breakdown: [
-      {
-        item: 'Snacks and Drinks',
-        description: 'Prepare some popcorn, chips, or homemade snacks for the karaoke night. Have a variety of beverages like soda, juices, or mocktails.'
-      },
-      {
-        item: 'Karaoke App Subscription',
-        description: 'Consider subscribing to a karaoke app for a wider selection of songs. Many apps offer free trials or inexpensive monthly subscriptions.'
-      },
-      {
-        item: 'Decorations and Lights',
-        description: 'Add some extra fun to the ambiance with fairy lights, disco balls, or themed decorations to make the karaoke night more festive.'
-      }
-    ],
-    tips: [
-      {
-        tip: 'Create a Song List: Prepare a list of songs to choose from in advance to avoid long pauses between performances.'
-      },
-      {
-        tip: 'Dress Up: Encourage each other to dress up in fun costumes or attire that matches the theme of your chosen songs.'
-      },
-      {
-        tip: "Record the Performances: Capture the fun moments by recording each other's performances to look back on and enjoy later."
-      }
-    ]
-  },
-  {
-    name: 'Game Night Fun',
-    'date location': 'At Home, Virginia',
-    budget: '$',
-    activities: [
-      {
-        activity: 'Choose Your Games',
-        description: 'Select a variety of video games or board games that you both enjoy playing. Make sure to have a mix of competitive and cooperative games to keep things interesting.'
-      },
-      {
-        activity: 'Snack Time',
-        description: 'Prepare some budget-friendly snacks like popcorn, chips, or homemade cookies to enjoy during your game night. Snacking while gaming adds to the fun!'
-      },
-      {
-        activity: 'Game On!',
-        description: 'Set up your gaming area with comfy seating, good lighting, and your chosen games. Dive into the gaming world together, compete, strategize, and have a blast!'
-      }
-    ],
-    cost_breakdown: [
-      {
-        item: 'Snacks and Drinks',
-        description: 'Cost of snacks and drinks for the evening, including popcorn, chips, and beverages.'
-      },
-      {
-        item: 'Game Rental or Purchase',
-        description: 'If you need to rent or purchase new games, allocate a small budget for adding new games to your collection.'
-      },
-      {
-        item: 'Optional: Game Add-Ons',
-        description: 'Consider any optional in-game purchases or expansions if playing video games that offer additional content.'
-      }
-    ],
-    tips: [
-      {
-        tip: 'Check out local thrift stores or online marketplaces for affordable board game options to expand your collection without breaking the bank.'
-      },
-      {
-        tip: 'Create a cozy gaming atmosphere with dimmed lights, comfortable seating, and maybe some background music to enhance the gaming experience.'
-      },
-      {
-        tip: 'Take turns choosing games to play to ensure both of you get to enjoy your favorite picks and discover new games together.'
-      }
-    ]
-  },
-  {
-    name: 'Fit Together Workout Date',
-    'date location': 'At Home, Virginia',
-    budget: '$',
-    activities: [
-      {
-        activity: 'Choose a Workout Video',
-        description: 'Select a fun and challenging workout video together that suits both of your fitness levels and preferences.'
-      },
-      {
-        activity: 'Set Up a Workout Area',
-        description: 'Clear a space in your living room or backyard to create a workout zone where you both can move freely.'
-      },
-      {
-        activity: 'Warm-Up and Exercise Together',
-        description: 'Start with a joint warm-up session, followed by the workout video. Encourage and motivate each other throughout the workout.'
-      }
-    ],
-    cost_breakdown: [
-      {
-        item: 'Workout Video Subscription',
-        description: 'Consider subscribing to a workout platform or use free resources available online for a variety of workout videos.'
-      },
-      {
-        item: 'Water and Towels',
-        description: 'Keep hydrated during the workout and have towels handy for wiping off sweat.'
-      },
-      {
-        item: 'Optional Fitness Equipment',
-        description: 'If needed, you can invest in basic fitness equipment like yoga mats or resistance bands, but bodyweight exercises can be just as effective.'
-      }
-    ],
-    tips: [
-      {
-        tip: 'Communicate and Support: Encourage each other and communicate openly about how the workout feels. Positive reinforcement can make the session more enjoyable.'
-      },
-      {
-        tip: "Celebrate Achievements: Celebrate completing the workout together, regardless of the intensity. Acknowledge each other's effort and progress."
-      },
-      {
-        tip: 'Cool Down Together: After the workout, cool down with some gentle stretching or yoga to relax your muscles and wind down the session.'
-      }
-    ]
-  }
-];
-
-
   const handleOnClick = async () => {
     if (mood && budget && location) {
+
       try {
         console.log('Sending data:', { mood, budget, location }); // Log data before sending
 
         // Fetch date ideas in a list of JSON Objects from the OPENAI API
-        /* const generateIdeas = await fetch('/api/suggest-date-ideas', {
+        const generateIdeas = await fetch('/api/suggest-date-ideas', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -171,82 +33,47 @@ const data: DateIdea[] = [
         });
 
         const data: DateIdea[] = await generateIdeas.json();
-        console.log('Received data:', data);*/ 
+        console.log('Received data:', data);
 
         const dateIdeasWithPhotos = await Promise.all(data.map(async (dateIdea: DateIdea) => {
-          const { 'date location': dateLocation, name } = dateIdea;
-          console.log('Date location being used:', dateLocation);
+            let photos: string[] = [];
 
-          const locationName = dateLocation.split(',')[0].trim();
-          let photos = [];
+            const { 'date location': dateLocation, name } = dateIdea;
+            console.log('Date location being used:', dateLocation);
 
-          if (locationName === 'At Home' || locationName === 'Your Backyard' || locationName === 'Your Home' ) {
-            // Fetch image from DeepAI API
-            /* const generateImage = await fetch('/api/generate-image', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ prompt: dateIdea }), 
-            });
+            const locationName = dateLocation.split(',')[0].trim();
 
-            const imageData = await generateImage.json();
-            console.log('Received image data:', imageData); // Log the received image data
+            if (locationName === 'At Home' || locationName === 'Your Backyard' || locationName === 'Your Home') {
+              const findImage = await fetch('/api/serp-image-search', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: name }),
+              });
 
-            if (imageData.output_url) {
-              photos.push(imageData.output_url);
-            } */
+              const imageData = await findImage.json();
 
+              if (imageData.thumbnails && imageData.thumbnails.length > 0) {
+                photos = imageData.thumbnails;
+                console.log('Received image data:', photos);
+              }
+          } else {
+              // Fetch the photoUrl from the Google Places API using the place name
+              const findPlace = await fetch('/api/get-place-images', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ placeName: dateLocation }),
+              });
 
-            //Fetch image from Google custom search API
-            /* const findImage = await fetch('/api/image-search', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ query: name }),
-            });
+              const placeData = await findPlace.json();
+              console.log('Received place data:', placeData);
 
-            const imageData = await findImage.json();
-            console.log('Received image data:', imageData); // Log the received image data
-
-            if(imageData.items && imageData.items.length > 0) {
-              photos.push(imageData.items[0].link);
-            } */
-
-            // Fetch image from puppeteer
-            const searchImage = await fetch('/api/image-search-serp', { 
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ query: name }),
-            });
-
-            const imageData = await searchImage.json();
-            console.log('Received image data:', imageData); // Log the received image data
-
-            if (imageData.images && imageData.images.length > 0) {
-              photos = imageData.imageUrls;
-            }
-          } 
-          
-          else {
-            // Fetch the photoUrl from the Google Places API using the place name
-            const findPlace = await fetch('/api/get-place-images', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ placeName: dateLocation }),
-            });
-
-            const placeData = await findPlace.json();
-            console.log('Received place data:', placeData); // Log the received place data
-
-            if (placeData.photos && placeData.photos.length > 0) {
-              photos = placeData.photos;
-            }
+              if (placeData.photos && placeData.photos.length > 0) {
+                photos = placeData.photos;
+              }
           }
 
           return { ...dateIdea, photos };
@@ -254,7 +81,7 @@ const data: DateIdea[] = [
 
         // Store the JSON array of date ideas with photos in local storage
         localStorage.setItem('dateIdeas', JSON.stringify(dateIdeasWithPhotos));
-        console.log('Stored date ideas with photos:', dateIdeasWithPhotos); // Debugging: Log the object being stored
+        console.log('Stored date ideas with photos:', dateIdeasWithPhotos);
 
         // Navigate to the dates page with mood and location in the URL
         const url = `/dates/${encodeURIComponent(mood)}-${encodeURIComponent(location)}`;
@@ -302,7 +129,6 @@ const data: DateIdea[] = [
             <option value="Adventurous">Adventurous</option>
             <option value="At-Home">At-Home</option>
             <option value="Creative">Creative</option>
-            <option value="relaxed">Relaxed</option>
             <option value="Romantic">Romantic</option>
           </select>
         </div>
