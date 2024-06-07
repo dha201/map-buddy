@@ -1,9 +1,6 @@
-/**
- * Root Layout
- */
-
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, Inter } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
 import "./globals.css";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -34,7 +31,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${ibmPlexSans.variable}`}>{children}</body>
+      <body className={`${inter.variable} ${ibmPlexSans.variable}`}>
+        <SessionProvider>
+          {children}
+        </SessionProvider>
+      </body>
     </html>
   );
 }

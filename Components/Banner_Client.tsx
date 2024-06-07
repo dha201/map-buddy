@@ -16,14 +16,15 @@ export default function Banner_Client() {
   const [budget, setBudget] = useState('');
   const [location, setLocation] = useState('');
   const [specialNote, setNote] = useState('');
+  const [loading, setLoading] = useState(false); // New state for loading
 
   const handleOnClick = async () => {
     if (mood && budget && location) {
+      setLoading(true); // Set loading to true when fetching starts
 
       try {
-        console.log('Sending data:', { mood, budget, location }); // Log data before sending
+        console.log('Sending data:', { mood, budget, location });
 
-        // Fetch date ideas in a list of JSON Objects from the OPENAI API
         const generateIdeas = await fetch('/api/suggest-date-ideas', {
           method: 'POST',
           headers: {
@@ -37,10 +38,8 @@ export default function Banner_Client() {
 
         const dateIdeasWithPhotos = await Promise.all(data.map(async (dateIdea: DateIdea) => {
             let photos: string[] = [];
-
             const { 'date location': dateLocation, name } = dateIdea;
             console.log('Date location being used:', dateLocation);
-
             const locationName = dateLocation.split(',')[0].trim();
 
             if (locationName === 'At Home' || locationName === 'Your Backyard' || locationName === 'Your Home') {
@@ -53,13 +52,11 @@ export default function Banner_Client() {
               });
 
               const imageData = await findImage.json();
-
               if (imageData.thumbnails && imageData.thumbnails.length > 0) {
                 photos = imageData.thumbnails;
                 console.log('Received image data:', photos);
               }
-          } else {
-              // Fetch the photoUrl from the Google Places API using the place name
+            } else {
               const findPlace = await fetch('/api/get-place-images', {
                 method: 'POST',
                 headers: {
@@ -70,25 +67,25 @@ export default function Banner_Client() {
 
               const placeData = await findPlace.json();
               console.log('Received place data:', placeData);
-
               if (placeData.photos && placeData.photos.length > 0) {
                 photos = placeData.photos;
               }
-          }
+            }
 
-          return { ...dateIdea, photos };
-        }));
+            return { ...dateIdea, photos };
+          })
+        );
 
-        // Store the JSON array of date ideas with photos in local storage
         localStorage.setItem('dateIdeas', JSON.stringify(dateIdeasWithPhotos));
         console.log('Stored date ideas with photos:', dateIdeasWithPhotos);
 
-        // Navigate to the dates page with mood and location in the URL
         const url = `/dates/${encodeURIComponent(mood)}-${encodeURIComponent(location)}`;
         window.location.href = url;
 
       } catch (error) {
         console.error('Error fetching date ideas:', error);
+      } finally {
+        setLoading(false); // Set loading to false when fetching is complete
       }
     } else {
       alert('Please select mood, budget, and location');
@@ -159,8 +156,34 @@ export default function Banner_Client() {
         </div>
 
         <div className="mt-12">
-          <button onClick={handleOnClick} className="bg-blue-500 text-white p-3 rounded">
-            Find Dates
+          <button 
+            onClick={handleOnClick} 
+            className="bg-blue-500 text-white p-3 rounded flex items-center justify-center"
+          >
+            {loading ? (
+              <svg 
+                className="animate-spin h-5 w-5 text-white" 
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24"
+              >
+                <circle 
+                  className="opacity-25" 
+                  cx="12" 
+                  cy="12" 
+                  r="10" 
+                  stroke="currentColor" 
+                  strokeWidth="4"
+                />
+                <path 
+                  className="opacity-75" 
+                  fill="currentColor" 
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+            ) : (
+              "Find Dates"
+            )}
           </button>
         </div>
       </div>

@@ -1,7 +1,10 @@
 'use client';
 
-import Card from '@/Components/Card_server';
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from 'react';
+import Card from '@/Components/Card_server';
+import ProfileIcon from '@/Components/ProfileIcon';
 
 // Define the type for the date idea object
 interface DateIdea {
@@ -24,6 +27,8 @@ interface DateIdea {
 
 export default function Page() {
   const [dateIdeas, setDateIdeas] = useState<DateIdea[]>([]);
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
     const storedDateIdeas = localStorage.getItem('dateIdeas');
@@ -34,8 +39,30 @@ export default function Page() {
     }
   }, []);
 
+  useEffect(() => {
+    if (status === "loading") {
+      return;
+    }
+
+    if (!session || !session.user) {
+      // Redirect to login page
+      router.push("/login");
+    }
+  }, [session, status, router]);
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (!session || !session.user) {
+    return null; // Render nothing while redirecting
+  }
+
+  const userId = session.user?.id ?? session.user?.name ?? 'User';
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-14">
+      <ProfileIcon userId={userId} />
       <h2 className="mt-8 pb-8 text-4xl font-bold text-white">
         Your Date Ideas
       </h2>

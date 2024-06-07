@@ -26,7 +26,27 @@ const dateIdeasJSON: Record<string, string[]> = {
     "Visit a Park - Take a walk or have a picnic in a local park.",
     "Go to a Free Event - Look for free events in your area.",
     "Volunteer Together - Spend time helping others and volunteering.",
-    "Go to a Library - Explore books and resources at a local library."
+    "Go to a Library - Explore books and resources at a local library.",
+    "Plan a Slow Food Picnic - Spend quality time together preparing and grazing on good, clean, locally sourced foods.",
+    "Be Adventurous - Try biking, hiking on a trail or kayaking; enjoy an afternoon in nature.",
+    "Sing Karaoke - Pick a few favorite duet karaoke songs and enjoy.",
+    "Go Dancing - Choose a spot that plays your favorite tunes or try something new and different.",
+    "Take a Pottery-Making Class - This DIY activity can be romantic too. Get creative with a DIY pottery kit at home instead.",
+    "Visit an Amusement Park - Share the adrenaline rush of a roller-coaster ride or walk through a funhouse.",
+    "Drive a Go Kart - Test your driving skills and create some friendly competition with a spin around a go-kart race track.",
+    "Try Axe Throwing - Put your axe-throwing skills to the test and consider joining a league together.",
+    "Play Mini-Golf - Navigate your way around the holes at a mini-golf course.",
+    "Go Shopping - Browse through vintage shops, buy vinyl on Record Store Day, and explore art galleries or specialty shops.",
+    "Do Sunday Brunch - A brunch date is always a good idea, and a brunch double date is twice as fun.",
+    "Tailgate - Mingle with your fellow football fans.",
+    "Visit Your Local Farmer's Market - Pick up fresh produce to cook a delicious meal together.",
+    "Visit the Zoo or Aquarium - Marvel at the exhibits and learn about your favorite animals together.",
+    "Rent a Convertible - The perfect spring date idea, go cruising through scenic parkways and rural back roads to celebrate the change in season.",
+    "Go Horseback Riding - Ride off into the sunset together on horseback.",
+    "Take a Road Trip - Plan a road trip together and explore new places.",
+    "Hop on the Alphabet Date Idea Trend - Add some order to your date night planning by working your way through alphabet date ideas.",
+    "Go to an Arcade - Love the nostalgia of old-school arcade games, or, an immersive virtual reality video game experience? There are lots of options to try.",
+
   ],
   "Creative": [
     "Take a Pottery Class - Create something unique with a pottery class.",
@@ -41,6 +61,22 @@ const dateIdeasJSON: Record<string, string[]> = {
     "Do a Science Experiment - Have fun with a simple science experiment at home."
   ],
   "At-Home": [
+    "Take an Aerial Yoga Class - Not your typical yoga class, but an anti-gravity one where you'll be suspended in air.",
+    "Learn to Trapeze - Swinging your partner through the air is the ultimate thrilling couple experience.",
+    "Try Indoor Bouldering - Clambering about a rock climbing gym is a great way to work together and break a sweat.",
+    "Take a Dance Class - Ballroom dancing, Zumba, salsa, swing—there's a dance class for every genre.",
+    "Take a Cooking Class - This is another date night idea with lots of options and the chance to try cooking a new cuisine. You could even sign up for a meal subscription like Blue Apron, so you can make delicious, chef-designed recipes at home with fresh, pre-measured ingredients.",
+    "Escape Room - Enjoy the rush of entering the unknown and working together to solve a riddle.",
+    "Murder Mystery Night - Also intriguing, solving a crime at a Murder Mystery event. If you haven't tried one before, you're in for an experience. At-home murder mystery games are a fun alternative to going out that'll give you and your partner hours of fun sleuthing.",
+    "Indoor Beach Volleyball - If it's miserable outside, get those summer vibes with an afternoon playing indoor volleyball.",
+    "Have an Indoor Picnic - Sprawl out on the living room floor and graze on picnic-style food and drink.",
+    "Read Spooky Stories - Set the scene with a roaring fire and cozy blanket.",
+    "Binge on a TV Series - If you've fallen into the trap of using your screen time to each of you watching different TV shows, schedule a Netflix and chill night to binge on a show together or watch a movie —choose one with a relationship theme that you can discuss afterward, as Boykin suggests.",
+    "Rearrange your Living Room - Switch up your living space for a change of scenery. It doesn't have to be permanent. Make it a temporary change for a coffee table dinner date or a comfy pillow crash pad in front of the fireplace or TV.",
+    "Research your Family History - Share what you know about your family history. Take it a step further and do a DNA test with a service like Ancestry.com.",
+    "Create a Video - Edit together old video clips on your phone using an app like Splice or shoot some new footage of something fun—a funny pet, party tricks, a dance routine.",
+    "Make a Slideshow - Prefer stills to video? Go through your old photos to create a slideshow that documents your relationship, a trip or a joint project.",
+    "Make a TikTok - Get creative making a TikTok video. Who knows, it may even go viral.",
     "Have a Backyard Campout - Set up a tent and camp out in the backyard.",
     "Make Homemade Pizza - Spend the night making and baking pizzas.",
     "Do a Home Improvement Project - Work on improving something in your home.",
@@ -62,6 +98,12 @@ const dateIdeasJSON: Record<string, string[]> = {
     "Write Each Other Letters - Write love letters to each other and read them aloud."
   ],
   "Romantic": [
+    "Plan a Date Night Surprise - It can be having a simple candlelit dinner waiting when they get home, but the fact that it's a surprise will make it special.",
+    "Plant a Garden - Whether it's an herb garden, cacti or mini fruit trees, this is a fun, sweet activity that can be as labor-intensive or simple as you want it to be.",
+    "Go to a Drive-In Movie - Kick it old school and catch the latest movie release at a drive-in theater. Watch it from the comfort and privacy of your front seat or back seat;). Or for a classier vibe, go to the oldest movie theatre in town and take in the ambiance, as well as the show.",
+    "Order a Subscription Box - We love the idea of signing up for one of these cute date night subscription boxes.",
+    "Go Apple Picking - Head to the countryside for a stroll through an apple orchard. Bring home some apples to make a pie.",
+    "Make it a Double Date - Plan a double date with your BFFs. 'Research shows that double dating can be good for your relationship because it often sparks deeper and more meaningful conversation than when we go out alone.' Boykin says.",
     "Dinner Date Night - Have dinner at a quiet, quaint romantic restaurant or make something at home, paired with a good bottle of wine. Make it extra special and dress up, even if you're dining in.",
     "See a Comedy Show - The couple that laughs together, stays together. 'Laughter is the fiber of intimacy,' Greer says. 'Laughing together helps people bond.'",
     "Book a Spa Day - Put a focus on self-care and wellness by booking a couple's massage, manis, pedis and other treatments. Spoil yourselves to some time at a spa or invite a Soothe professional to give you a treatment at home.",
@@ -268,7 +310,7 @@ export async function POST(req: Request) {
         };
 
         const dateIdeas = [];
-        while (dateIdeas.length < 3) {
+        while (dateIdeas.length < 6) {
             const selectedIdeas = dateIdeasJSON[mood] || [];
             const randomIdea = selectedIdeas[Math.floor(Math.random() * selectedIdeas.length)];
 

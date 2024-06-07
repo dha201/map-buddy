@@ -1,9 +1,9 @@
-import LoginButton from '@/Components/ui/login-button';
+import { LoginCard } from "@/Components/auth/login-card";
 
-export default function LoginPage() {
+export default async function loginPage() {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <LoginButton />
-    </div>
+    <main className="flex min-h-screen flex-col items-center justify-center p-14">
+      <LoginCard />
+    </main>
   );
 }
