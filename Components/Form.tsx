@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import Image from 'next/image';
 
 interface DateIdea {
   name: string;
@@ -11,7 +10,7 @@ interface DateIdea {
   tips: Array<{ tip: string; }>;
 }
 
-export default function Banner_Client() {
+export default function Form() {
   const [mood, setMood] = useState('');
   const [budget, setBudget] = useState('');
   const [location, setLocation] = useState('');
@@ -186,16 +185,6 @@ export default function Banner_Client() {
             )}
           </button>
         </div>
-      </div>
-      <div className="relative z-10 lg:absolute lg:right-0 lg:top-10 lg:w-[50%]">
-        <Image
-          src="/static/hero-image.png"
-          width={800}
-          height={300}
-          alt="hero image"
-          priority={true}
-          className="relative"
-        />
       </div>
     </div>
   );

@@ -15,7 +15,6 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Google API key is missing' }, { status: 500 });
         }
 
-        // 1. Find Place Request to get place_id
         const findPlaceUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(placeName)}&inputtype=textquery&fields=place_id&key=${apiKey}`;
         const findPlaceResponse = await fetch(findPlaceUrl);
         if (!findPlaceResponse.ok) {
@@ -29,7 +28,6 @@ export async function POST(request: Request) {
 
         const placeId = findPlaceData.candidates[0].place_id;
 
-        // 2. Place Details Request to get photo references
         const placeDetailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=photos&key=${apiKey}`;
         const placeDetailsResponse = await fetch(placeDetailsUrl);
         if (!placeDetailsResponse.ok) {

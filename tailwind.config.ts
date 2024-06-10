@@ -8,7 +8,6 @@ const config: Config = {
   ],
   theme: {
     extend: {
-
       fontFamily: {
         interrrr: ['var(--font-inter)', 'sans-serif'],
         ibmplexsans: ['var(--font-ibmplexsans)', 'sans-serif'],
@@ -16,6 +15,7 @@ const config: Config = {
 
       backgroundImage: {
         gradient: "url('/static/background.png')",
+        'custom-gradient': 'radial-gradient(125% 125% at 50% 10%, #000 40%, #63e 100%)',
       },
 
       colors: {
@@ -31,9 +31,9 @@ const config: Config = {
           952: '#373b64',
         },
       },
-
     },
   },
   plugins: [],
 };
+
 export default config;

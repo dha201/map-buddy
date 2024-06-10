@@ -58,9 +58,9 @@ const dateIdeasJSON: Record<string, string[]> = {
     "Build Something - Work on a DIY project together.",
     "Create a Time Capsule - Make a time capsule to open in the future.",
     "Have a Themed Night - Plan a night around a specific theme.",
-    "Do a Science Experiment - Have fun with a simple science experiment at home."
   ],
   "At-Home": [
+    "Do a Science Experiment - Have fun with a simple science experiment at home.",
     "Take an Aerial Yoga Class - Not your typical yoga class, but an anti-gravity one where you'll be suspended in air.",
     "Learn to Trapeze - Swinging your partner through the air is the ultimate thrilling couple experience.",
     "Try Indoor Bouldering - Clambering about a rock climbing gym is a great way to work together and break a sweat.",
