@@ -1,4 +1,3 @@
-// /app/api/get-place-images/route.ts
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -28,7 +27,7 @@ export async function POST(request: Request) {
 
         const placeId = findPlaceData.candidates[0].place_id;
 
-        const placeDetailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=photos&key=${apiKey}`;
+        const placeDetailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=photos,website&key=${apiKey}`;
         const placeDetailsResponse = await fetch(placeDetailsUrl);
         if (!placeDetailsResponse.ok) {
             return NextResponse.json({ error: 'Error fetching place details' }, { status: 500 });
@@ -43,7 +42,9 @@ export async function POST(request: Request) {
             return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo.photo_reference}&key=${apiKey}`;
         });
 
-        return NextResponse.json({ photos });
+        const website = placeDetailsData.result.website || 'No website available';
+
+        return NextResponse.json({ photos, website });
 
     } catch (error) {
         return NextResponse.json({ error: 'An error occurred while fetching place images' }, { status: 500 });

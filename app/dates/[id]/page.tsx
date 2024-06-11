@@ -23,6 +23,7 @@ interface DateIdea {
     tip: string;
   }[];
   photos?: string[];
+  website: string;
 }
 
 export default function Page() {
@@ -79,13 +80,13 @@ export default function Page() {
               tips={dateIdea.tips}
               defaultImageURL="/static/mystery-card.png"
               images={dateIdea.photos ? dateIdea.photos : []}
+              website={dateIdea.website}
             />
           ))}
         </div>
       ) : (
         <p className="text-white">No date ideas available.</p>
       )}
-      <h3 className='font-interrrr'>Made with Love :)</h3>
     </main>
   );
 }

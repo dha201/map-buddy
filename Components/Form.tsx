@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState } from 'react';
 
 interface DateIdea {
@@ -15,16 +16,14 @@ export default function Form() {
   const [budget, setBudget] = useState('');
   const [location, setLocation] = useState('');
   const [specialNote, setNote] = useState('');
-  const [loading, setLoading] = useState(false); // New state for loading
+  const [loading, setLoading] = useState(false);
 
   const handleOnClick = async () => {
     if (mood && budget && location) {
-      setLoading(true); // Set loading to true when fetching starts
+      setLoading(true);
 
       try {
-        console.log('Sending data:', { mood, budget, location });
-
-        const generateIdeas = await fetch('/api/suggest-date-ideas', {
+        const response = await fetch('/api/suggest-date-ideas', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -32,13 +31,14 @@ export default function Form() {
           body: JSON.stringify({ mood, budget, location, specialNote }),
         });
 
-        const data: DateIdea[] = await generateIdeas.json();
-        console.log('Received data:', data);
+        const data: DateIdea[] = await response.json();
 
-        const dateIdeasWithPhotos = await Promise.all(data.map(async (dateIdea: DateIdea) => {
+        const dateIdeasWithPhotos = await Promise.all(
+          data.map(async (dateIdea: DateIdea) => {
             let photos: string[] = [];
+            let website: string = 'No website available';
+
             const { 'date location': dateLocation, name } = dateIdea;
-            console.log('Date location being used:', dateLocation);
             const locationName = dateLocation.split(',')[0].trim();
 
             if (locationName === 'At Home' || locationName === 'Your Backyard' || locationName === 'Your Home') {
@@ -53,7 +53,6 @@ export default function Form() {
               const imageData = await findImage.json();
               if (imageData.thumbnails && imageData.thumbnails.length > 0) {
                 photos = imageData.thumbnails;
-                console.log('Received image data:', photos);
               }
             } else {
               const findPlace = await fetch('/api/get-place-images', {
@@ -65,26 +64,26 @@ export default function Form() {
               });
 
               const placeData = await findPlace.json();
-              console.log('Received place data:', placeData);
               if (placeData.photos && placeData.photos.length > 0) {
                 photos = placeData.photos;
               }
+              if (placeData.website) {
+                website = placeData.website;
+              }
             }
 
-            return { ...dateIdea, photos };
+            return { ...dateIdea, photos, website};
           })
         );
 
         localStorage.setItem('dateIdeas', JSON.stringify(dateIdeasWithPhotos));
-        console.log('Stored date ideas with photos:', dateIdeasWithPhotos);
-
         const url = `/dates/${encodeURIComponent(mood)}-${encodeURIComponent(location)}`;
         window.location.href = url;
 
       } catch (error) {
         console.error('Error fetching date ideas:', error);
       } finally {
-        setLoading(false); // Set loading to false when fetching is complete
+        setLoading(false);
       }
     } else {
       alert('Please select mood, budget, and location');
@@ -92,34 +91,34 @@ export default function Form() {
   };
 
   return (
-    <div className="relative mb-12 lg:mb-24 lg:grid lg:grid-cols-2 lg:gap-12">
-      <div className="z-20 flex flex-col px-2 md:pt-12">
-        <h1 className="my-2 flex-wrap">
-          <span className="pr-2 text-white">Date</span>
-          <span className="text-gray-900">Buddy</span>
+    <div className="flex flex-col h-full " >
+      <div className="flex flex-col items-center justify-center" >
+        <h1 className="my-2 text-center text-lg">
+          <span className="pr-1 text-white text-2xl">Date</span>
+          <span className="text-2xl text-white">Buddy</span>
         </h1>
-
-        <p className="font-sans text-xl font-semibold text-gray-900 md:mt-5 lg:text-2xl">
+  
+        <p className="font-sans text-sm font-semibold text-white lg:text-lg text-center">
           Help you find the perfect Date!
         </p>
-
-        <div className="mt-6">
+  
+        <div className="mt-6 w-full">
           <label className="block text-white mb-2">Enter your location:</label>
           <input
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="w-full p-2 rounded"
+            className="w-full p-2 rounded text-black"
             placeholder="Enter your city or state"
           />
         </div>
-
-        <div className="mt-6">
+  
+        <div className="mt-6 w-full">
           <label className="block text-white mb-2">Select your mood:</label>
           <select
             value={mood}
             onChange={(e) => setMood(e.target.value)}
-            className="w-full p-2 rounded"
+            className="w-full p-2 rounded text-black"
           >
             <option value="">--Choose a mood--</option>
             <option value="Adventurous">Adventurous</option>
@@ -128,13 +127,13 @@ export default function Form() {
             <option value="Romantic">Romantic</option>
           </select>
         </div>
-
-        <div className="mt-6">
+  
+        <div className="mt-6 w-full">
           <label className="block text-white mb-2">Select your budget:</label>
           <select
             value={budget}
             onChange={(e) => setBudget(e.target.value)}
-            className="w-full p-2 rounded"
+            className="w-full p-2 rounded text-black"
           >
             <option value="">--Choose a budget--</option>
             <option value="$">$ (0 - $50)</option>
@@ -142,22 +141,22 @@ export default function Form() {
             <option value="$$$">$$$ (above $200)</option>
           </select>
         </div>
-
-        <div className="mt-6">
+  
+        <div className="mt-6 w-full">
           <label className="block text-white mb-2">Enter any restriction or special note:</label>
           <input
             type="text"
             value={specialNote}
             onChange={(e) => setNote(e.target.value)}
-            className="w-full p-2 rounded"
+            className="w-full p-2 rounded text-black"
             placeholder="i.e No gluten, No seafood, physical restrictions, etc."
           />
         </div>
-
-        <div className="mt-12">
+  
+        <div className="mt-12 w-full flex justify-center">
           <button 
             onClick={handleOnClick} 
-            className="bg-blue-500 text-white p-3 rounded flex items-center justify-center"
+            className="mt-2 px-8 py-4 bg-purple-951 text-black rounded-full shadow-lg hover:bg-blue-900 font-bold"
           >
             {loading ? (
               <svg 
@@ -186,6 +185,8 @@ export default function Form() {
           </button>
         </div>
       </div>
+  
+      <div className="relative w-1/3 h-1/3 mb-12 lg:mb-24 flex items-center justify-center"></div>
     </div>
   );
 }

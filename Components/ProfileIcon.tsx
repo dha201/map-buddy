@@ -15,7 +15,7 @@ const ProfileIcon: React.FC<ProfileIconProps> = ({ userId }) => {
       <div className="relative">
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
-          className="flex items-center justify-center p-2 w-36 rounded-full bg-purple-800 hover:bg-purple-600 focus:outline-none"
+          className="flex items-center justify-center p-2 w-36 rounded-full bg-blue-900 hover:bg-blue-950 focus:outline-none"
         >
           <span className="text-sm font-medium text-center">{userId}</span>
         </button>

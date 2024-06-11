@@ -9,7 +9,9 @@
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
       Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-    @apply bg-custom-gradient h-full w-full;
+    @apply bg-custom-gradient min-h-screen w-full;
+    background-size: cover;
+    background-attachment: fixed;
   }
 
   h1 {
@@ -51,6 +53,14 @@
 
   p {
     @apply m-0 text-2xl font-bold md:text-3xl;
+  }
+  
+  .slick-slider .slick-dots li button:before {
+    color: #3490dc; /* Tailwind color blue-500 */
+  }
+  
+  .slick-slider .slick-dots li.slick-active button:before {
+    color: #1d4ed8; /* Tailwind color blue-700 */
   }
 }
 
