@@ -97,7 +97,7 @@ export default function HistoryMenu({ userId }: UserIdeasProps) {
   return (
     <div className="absolute top-0 left-0 m-4">
 
-<div className="relative w-full max-w-xs">
+    <div className="relative w-full max-w-xs">
       <button
         onClick={() => setDropdownOpen(!dropdownOpen)}
         className="w-full bg-gradient-to-br from-purple-951 via-black to-violet-900 border text-white px-4 py-2 border border-gray-300 rounded shadow-sm flex justify-between items-center"
@@ -114,8 +114,8 @@ export default function HistoryMenu({ userId }: UserIdeasProps) {
         </svg>
       </button>
       {dropdownOpen && (
-        <div className="absolute w-full max-h-60 overflow-y-auto rounded-b shadow-lg z-10 bg-black">
-          <ul className="bg-gradient-to-br from-purple-951 via-black to-violet-900 border border-gray-300 rounded-b gradient-border p-1">
+        <div className="absolute w-full rounded-b shadow-lg z-10 bg-black" style={{ height: 'calc(100vh - 10%)' }}>
+          <ul className="bg-gradient-to-br from-purple-951 via-black to-violet-900 border border-gray-300 rounded-b gradient-border p-1 overflow-y-auto h-full">
             {dateIdeas.map((idea, index) => (
               <li
                 key={index}
