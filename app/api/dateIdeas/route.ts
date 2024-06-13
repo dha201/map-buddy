@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
-import { url } from 'inspector';
 
 const uri = process.env.MONGODB_URI || '';
 const client = new MongoClient(uri);
+
 
 
 /**
@@ -12,14 +12,14 @@ const client = new MongoClient(uri);
  * and returns a success or error response.
  */
 export async function POST(request: Request) {
-    const { userID, dateIdeas } = await request.json();
+    const { userId, dateIdeas  } = await request.json();
 
   try {
     await client.connect();
     const database = client.db('dateBuddyDB');
     const collection = database.collection('dateIdeas');
 
-    await collection.insertOne({ userID, dateIdeas });
+    await collection.insertOne({ userId, dateIdeas });
 
     return new Response('Idea saved successfully', { status: 201 });
   } catch (error) {
@@ -38,14 +38,14 @@ export async function POST(request: Request) {
  */
 export async function Get(request: Request) {
     const {searchParams} = new URL(request.url);
-    const userID = searchParams.get('userID');
+    const userId = searchParams.get('userID');
 
     try {
         await client.connect();
         const dateBuddyDB = client.db('dateBuddyDB');
         const dateIdeas = dateBuddyDB.collection('dateIdeas');
 
-        const ideas = await dateIdeas.find({userID}).toArray();
+        const ideas = await dateIdeas.find({userId}).toArray();
         return NextResponse.json(ideas, {status: 200});
     } catch (error) {
         console.error('Error retrieving ideas:', error);

@@ -111,7 +111,7 @@ export default function Home() {
 
       </div>
       <Modal isOpen={showForm} onClose={() => setShowForm(false)}>
-        <FormComponent />
+        <FormComponent userId = {userId} />
       </Modal>
     </div>
   );

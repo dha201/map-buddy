@@ -26,7 +26,7 @@ interface DateIdea {
   website: string;
 }
 
-export default function Page() {
+export default function ShowPage() {
   const [dateIdeas, setDateIdeas] = useState<DateIdea[]>([]);
   const { data: session, status } = useSession();
   const router = useRouter();

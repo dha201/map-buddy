@@ -11,7 +11,11 @@ interface DateIdea {
   tips: Array<{ tip: string; }>;
 }
 
-export default function Form() {
+interface FormProps {
+  userId: string;
+}
+
+export default function Form( {userId}: FormProps) {
   const [mood, setMood] = useState('');
   const [budget, setBudget] = useState('');
   const [location, setLocation] = useState('');
@@ -28,11 +32,26 @@ export default function Form() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ mood, budget, location, specialNote }),
+          body: JSON.stringify({ mood, budget, location, specialNote, userId }),
         });
 
         const data: DateIdea[] = await response.json();
 
+        // Make a POST request to save the generated date ideas
+        const storeIdeas = await fetch('/api/dateIdeas', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId, dateIdeas: data }),
+        });
+
+        if (response.ok) {
+            console.log('Ideas saved successfully');
+        } else {
+            console.error('Error saving ideas');
+        }
+        
         const dateIdeasWithPhotos = await Promise.all(
           data.map(async (dateIdea: DateIdea) => {
             let photos: string[] = [];
@@ -54,6 +73,8 @@ export default function Form() {
               if (imageData.thumbnails && imageData.thumbnails.length > 0) {
                 photos = imageData.thumbnails;
               }
+
+              website = 'No website available';
             } else {
               const findPlace = await fetch('/api/get-place-images', {
                 method: 'POST',

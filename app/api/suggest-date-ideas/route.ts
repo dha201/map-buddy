@@ -19,14 +19,11 @@ const dateIdeasJSON: Record<string, string[]> = {
     "Visit an Aquarium - Explore the underwater world at an aquarium.",
     "Go for a Hike - Spend time outdoors on a scenic hike.",
     "Have a Picnic - Pack a lunch and enjoy a meal outside.",
-    "Visit a Farmers Market - Explore a local farmers market and try fresh produce.",
     "Go to the Beach - Relax and have fun at the beach.",
     "Take a Bike Ride - Enjoy a bike ride through your neighborhood or park.",
     "Stargaze - Spend the night looking at the stars.",
     "Visit a Park - Take a walk or have a picnic in a local park.",
     "Go to a Free Event - Look for free events in your area.",
-    "Volunteer Together - Spend time helping others and volunteering.",
-    "Go to a Library - Explore books and resources at a local library.",
     "Plan a Slow Food Picnic - Spend quality time together preparing and grazing on good, clean, locally sourced foods.",
     "Be Adventurous - Try biking, hiking on a trail or kayaking; enjoy an afternoon in nature.",
     "Sing Karaoke - Pick a few favorite duet karaoke songs and enjoy.",
@@ -64,7 +61,6 @@ const dateIdeasJSON: Record<string, string[]> = {
     "Take an Aerial Yoga Class - Not your typical yoga class, but an anti-gravity one where you'll be suspended in air.",
     "Learn to Trapeze - Swinging your partner through the air is the ultimate thrilling couple experience.",
     "Try Indoor Bouldering - Clambering about a rock climbing gym is a great way to work together and break a sweat.",
-    "Take a Dance Class - Ballroom dancing, Zumba, salsa, swing—there's a dance class for every genre.",
     "Take a Cooking Class - This is another date night idea with lots of options and the chance to try cooking a new cuisine. You could even sign up for a meal subscription like Blue Apron, so you can make delicious, chef-designed recipes at home with fresh, pre-measured ingredients.",
     "Escape Room - Enjoy the rush of entering the unknown and working together to solve a riddle.",
     "Murder Mystery Night - Also intriguing, solving a crime at a Murder Mystery event. If you haven't tried one before, you're in for an experience. At-home murder mystery games are a fun alternative to going out that'll give you and your partner hours of fun sleuthing.",
@@ -124,9 +120,10 @@ const dateIdeasJSON: Record<string, string[]> = {
 };
 
 export async function POST(req: Request) {
+
     try {
-        const { mood, budget, location, specialNote } = await req.json();
-        console.log('Received data:', { mood, budget, location, specialNote });
+        const { mood, budget, location, specialNote, userId } = await req.json();
+        console.log('Received data:', { mood, budget, location, specialNote, userId });
 
         const previousDateIdeas: any[] = [];
 
@@ -315,7 +312,6 @@ export async function POST(req: Request) {
             const randomIdea = selectedIdeas[Math.floor(Math.random() * selectedIdeas.length)];
 
             const idea = await generateDateIdea(randomIdea, budget, location, specialNote);
-
             const locationName = idea['date location'].split(',')[0].trim();
 
             const isDuplicate = previousDateIdeas.some(prevIdea => {

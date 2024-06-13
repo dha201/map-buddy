@@ -36,7 +36,6 @@ export async function POST(request: Request) {
       q: query,
       api_key: process.env.SERPAPI_API_KEY,
     };
-    console.log('Params:', params);
 
     const data = await getJson(params);
     if (data.error) {
