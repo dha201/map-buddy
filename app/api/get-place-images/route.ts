@@ -27,7 +27,7 @@ export async function POST(request: Request) {
 
         const placeId = findPlaceData.candidates[0].place_id;
 
-        const placeDetailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=photos,website&key=${apiKey}`;
+        const placeDetailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=photos,website&key=${apiKey}&photoreference.maxwidth=400`;
         const placeDetailsResponse = await fetch(placeDetailsUrl);
         if (!placeDetailsResponse.ok) {
             return NextResponse.json({ error: 'Error fetching place details' }, { status: 500 });

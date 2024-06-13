@@ -53,7 +53,7 @@ export default function Form({ userId }: FormProps) {
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ query: name }),
+                body: JSON.stringify({ query: `${name} For Couple` }),
               });
         
               const imageData = await findImage.json();
@@ -77,6 +77,19 @@ export default function Form({ userId }: FormProps) {
               }
               if (placeData.website) {
                 website = placeData.website;
+              }
+        
+              const findImage = await fetch('/api/image-search', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: `${name} For Couple` }),
+              });
+        
+              const imageData = await findImage.json();
+              if (imageData.thumbnails && imageData.thumbnails.length > 0) {
+                photos = [...photos, ...imageData.thumbnails];
               }
             }
         
