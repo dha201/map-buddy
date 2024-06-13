@@ -43,7 +43,7 @@
     margin: 0;
   }
 
-  button { /*To change bg-purple-951 to another color, edit tailwind.config*/
+  button {
     @apply w-fit cursor-pointer rounded-lg border-0 bg-purple-951 px-6 py-4 text-lg text-white hover:bg-violet-900;
   }
 
@@ -62,9 +62,34 @@
   .slick-slider .slick-dots li.slick-active button:before {
     color: #1d4ed8; /* Tailwind color blue-700 */
   }
+
+  .gradient-border {
+    border-image: conic-gradient(from 45deg, #38b2ac, #6b46c1, #4299e1, #ed64a6, #38b2ac);
+    border-image-slice: 1;
+  }
+
+  .gradient-border-item {
+    border: 2px solid transparent; 
+    border-image: conic-gradient(from 45deg, #38b2ac, #6b46c1, #4299e1, #ed64a6, #38b2ac);
+    border-image-slice: 1;
+    margin: 4px 0; /* Adjust as necessary for spacing */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .custom-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
 }
 
 @layer components {
+  .bg-custom-gradient {
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+  }
+
   /* glass-morphism */
   .glass {
     @apply border border-solid border-[hsla(0,0%,100%,0.2)] bg-gray-951 backdrop-blur-[10px] hover:border hover:border-solid hover:border-white;

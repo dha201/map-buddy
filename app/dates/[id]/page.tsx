@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from 'react';
 import Card from '@/Components/Card_server';
 import ProfileIcon from '@/Components/ProfileIcon';
+import HistoryMenu from '@/Components/user-ideas-history';
 
-// Define the type for the date idea object
 interface DateIdea {
   name: string;
   'date location': string;
@@ -36,30 +36,35 @@ export default function ShowPage() {
     if (storedDateIdeas) {
       const parsedDateIdeas = JSON.parse(storedDateIdeas) as DateIdea[];
       setDateIdeas(parsedDateIdeas);
-      console.log('Stored date ideas:', parsedDateIdeas); // Log parsed date ideas
+      console.log('Stored date ideas:', parsedDateIdeas);
     }
   }, []);
 
   useEffect(() => {
     if (status === "loading") {
+      console.log('Session status: loading');
       return;
     }
 
     if (!session || !session.user) {
-      // Redirect to login page
+      console.log('User not authenticated, redirecting to login');
       router.push("/login");
     }
   }, [session, status, router]);
 
   if (status === "loading") {
+    console.log('Rendering loading state');
     return <div>Loading...</div>;
   }
 
   if (!session || !session.user) {
-    return null; // Render nothing while redirecting
+    return null;
   }
 
   const userId = session.user?.id ?? session.user?.name ?? 'User';
+
+  console.log('Rendering main content');
+  console.log('User ID:', userId);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-14">
@@ -87,6 +92,7 @@ export default function ShowPage() {
       ) : (
         <p className="text-white">No date ideas available.</p>
       )}
+      <HistoryMenu userId={userId} />
     </main>
   );
 }

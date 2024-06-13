@@ -273,7 +273,6 @@ export async function POST(req: Request) {
               }
 
               const dateIdea = JSON.parse(jsonString[0]);
-              console.log('Generated date idea:', dateIdea);
               return dateIdea;
             }
 

@@ -31,7 +31,7 @@ type CardType = {
   tips?: Tip[];
   defaultImageURL: string;
   images?: string[];
-  website: string;
+  website?: string;
 };
 
 export default function Card({
@@ -51,10 +51,7 @@ export default function Card({
   const [fontSize, setFontSize] = useState('text-2xl');
   const titleRef = useRef<HTMLHeadingElement>(null);
 
-  useEffect(() => {
-    console.log('Card component received props:', { name, location, budget, activities, cost_breakdown, tips, defaultImageURL, images, website });
-    console.log('Initial imageURL:', images);
-  }, [name, location, budget, activities, cost_breakdown, tips, defaultImageURL, images, website]);
+  console.log('Card component received props:!!');
 
   const handleCardClick = () => {
     setIsModalOpen(true);
