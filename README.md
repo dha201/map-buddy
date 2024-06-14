@@ -1,21 +1,10 @@
 # SmartBrain
 
 <div align="center">
-    <h2>Face Detection project </h1>
+    <h2>Date Buddy</h1>
         <h4>
-            Built with <a href="https://create-react-app.dev/">Create-React-App</a> &
-            Hosted by <a href="https://www.heroku.com/platform">Heroku</a> 
+            Built with <a href="[https://create-react-app.dev/](https://nextjs.org/)">Create next-app</a> &
         </h4>
-</div>
-
-<!-- Live Demo Link -->
-<div align="center">
-<a href="https://face-recognition-brain-ef77df87c18e.herokuapp.com/" target='_blank'>
-    click here for a live demo
-</a>
-<p>
-
-</p>
 </div>
 
 
@@ -24,57 +13,47 @@
 
 <p align="center">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=js,react,nodejs,postgres,postman,git,heroku,github,html" />
+    <img src="https://skillicons.dev/icons?i=ts,nextjs,react,nodejs,mongodb,tailwind," />
   </a>
 </p>
 
 </br>
-Face-recognition-brain is a full-stack web app for detecting faces in images using AI, providing an intuitive interface built with React that connects to a Node/Express backend. 
-The front end allows users to seamlessly submit images and view facial recognition results, with bounding boxes highlighting detected faces via integration with the Clarifai API.
-The app simply coordinates the client, server, database, and API, registering users with encrypted passwords, processing submissions, and tracking metrics. 
-The tech stack demonstrates the use of React, Node, PostgreSQL, and external APIs, with face recognition happening rapidly through optimized calls to Clarifai's computer vision models. 
+DateBuddy is a full-stack web application designed to help users find and plan perfect date ideas based on their mood, budget, and location.
+ The app leverages AI to generate personalized date suggestions and integrates with various APIs to provide a seamless user experience.
+
+The front-end, built with Next.js and Tailwind CSS, allows users to input their preferences and receive tailored date ideas. 
+The backend, powered by Node.js and MongoDB, handles user authentication, data storage, and API integrations.
 
 ### :camera: A demo of the Web App
 <p align="center">
-<img src="face demo.png" ">
+<img src="DemoImg.png" ">
+</p>
+<p align="center">
+<img src="DemoImg2.png" ">
+</p>
+<p align="center">
+<img src="DemoImg3.png" ">
 </p>
 
 ## :key: Features
 As a user, you can:
 
-- Login/Log out or set up a New Account(Register)
-- Submit an image URL to analyze
-- See the total count of images analyzed for their account
-- Have their password securely hashed and stored on the registration
-- See analysis results almost instantly after submitting an image
+- Login/Log out or set up a new account (Register)
+- Input your mood, budget, and location to receive date ideas
+- View detailed date suggestions with activities, cost breakdowns, and tips
+- See images and websites related to the suggested date locations
+- Save your favorite date ideas for future reference
 
 ## :hammer: Project Structure
 
 The app consists of:
 
-- A React frontend created with Create React App
-- React Router for routing between pages
-- Navigation bar component for switching routes
-- Home page to display image analysis info
-- Login and Register pages for authentication
-- Integration with Clarifai API for image analysis
-- Node/Express backend hosted on Heroku
-- PostgreSQL database for user accounts
-- Bcrypt for password hashing
-- Knex.js for database integration
-- API routes on the backend for image URL processing
-- Service worker for offline capability
-- Particle.js for background animations
-
-Key technical pieces:
-
-- React with React Router for routing
-- React hooks for state and effects
-- Clarifai API integration for image analysis
-- Node & Express backend API
-- PostgreSQL database
-- Bcrypt password hashing
-- Knex.js for database access
-- API calls between frontend and backend
-- Service worker for offline support
-- Particle.js for animations
+- A Next.js frontend with server-side rendering
+- Tailwind CSS for styling and responsive design
+- React hooks for state management
+- Integration with OpenAI API and Puppeteer for generating date ideas
+- Google Maps API and SerpAPI for location-based/theme searches
+- NextAuth.js for user authentication with Google and GitHub providers
+- Node.js and Express backend hosted on Vercel
+- MongoDB for storing user data and date ideas
+- API routes on the backend for processing user inputs and fetching data
